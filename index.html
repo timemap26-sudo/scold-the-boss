@@ -447,21 +447,21 @@
   const bubble = $('#bubble'), fill = $('#fill'), bar = $('#bar');
 
   const STAGES = [
-    { min: 0,  key: 'calm',      label: '淡定', pitch: .85, rate: .95, lines: ['蛤？你說什麼？我沒聽清楚。', '有話好好說嘛，年輕人。', '冷靜一點，我們開個會討論一下。', '這是公司文化，你要學著適應。'] },
-    { min: 15, key: 'nervous',   label: '心虛', pitch: .9, rate: 1.02, lines: ['呃…對、對不起…', '好啦好啦，是我不對…', '我…我下次會注意的…', '你、你先別激動嘛…'] },
-    { min: 35, key: 'sorry',     label: '狂道歉', pitch: .95, rate: 1.1, lines: ['對不起！真的很對不起！', '抱歉抱歉抱歉抱歉！', '是我的錯，我深刻反省！', '拜託原諒我！我給你鞠躬！'] },
-    { min: 55, key: 'sad',       label: '快哭了', pitch: 1, rate: .88, lines: ['嗚…對不起…我知道錯了…', '別再罵了…我心好痛…', '我…我也是有壓力的嘛…', '嗚嗚…我真的不是故意的…'] },
-    { min: 75, key: 'cry',       label: '大哭', pitch: 1.05, rate: 1.05, lines: ['嗚嗚嗚嗚——對不起啦！', '哇啊啊啊我錯了啦！！', '媽媽…我想回家…嗚嗚…', '我是爛老闆！嗚哇——！'] },
-    { min: 92, key: 'breakdown', label: '崩潰', pitch: 1.15, rate: 1.2, lines: ['啊啊啊啊啊啊——！！！', '我不配當老闆！！我不配！！', '我辭職！我辭職好不好！！', '公司給你！全部給你！！'] },
+    { min: 0,  key: 'calm',      label: '淡定', pitch: .85, rate: .95, lines: ['蛤？我又沒做錯什麼。', '幹嘛那麼兇，我只是開個玩笑嘛。', '好啦好啦，算我不對，行了吧？', '有話好好說，別這樣嘛…'] },
+    { min: 15, key: 'nervous',   label: '心虛', pitch: .9, rate: 1.02, lines: ['呃…對、對不起啦…', '我、我不是故意的…', '好啦是我不好，你先消消氣…', '拜託你別生氣了好不好…'] },
+    { min: 35, key: 'sorry',     label: '狂道歉', pitch: .95, rate: 1.1, lines: ['對不起！真的對不起！', '我錯了我錯了我錯了！', '求求你原諒我！我給你跪下！', '我發誓再也不敢了！'] },
+    { min: 55, key: 'sad',       label: '快哭了', pitch: 1, rate: .88, lines: ['嗚…我知道錯了…求你別罵了…', '拜託…給我一次改過的機會…', '我真的會改…你相信我…', '嗚嗚…求你原諒我好不好…'] },
+    { min: 75, key: 'cry',       label: '大哭', pitch: 1.05, rate: 1.05, lines: ['嗚嗚嗚嗚——對不起啦！', '哇啊啊啊我錯了啦！！', '求求你饒了我吧！嗚嗚…', '我是爛人！我是大爛人！嗚哇——！'] },
+    { min: 92, key: 'breakdown', label: '崩潰', pitch: 1.15, rate: 1.2, lines: ['啊啊啊啊啊啊——！！！', '我不是人！！我不配當人！！', '饒命啊！饒了我吧！！', '我給你磕頭！磕一百個頭！！'] },
   ];
 
   const SPECIAL = [
-    { re: /加班|overtime/i, lines: ['好好好！今天不用加班！', '以後準時下班！我保證！', '加班費三倍！不，十倍！'] },
-    { re: /薪水|加薪|薪資|工資|錢/, lines: ['加！馬上加薪！', '薪水翻倍！求你別罵了！', '我的薪水分你一半！'] },
-    { re: /年終|獎金|分紅/, lines: ['年終發十個月！', '獎金！大家都有獎金！'] },
-    { re: /休假|放假|請假|特休|假/, lines: ['放假！全公司放假！', '特休隨便你請！'] },
-    { re: /開會|會議/, lines: ['再也不開沒意義的會了！', '會議全部取消！'] },
-    { re: /辭職|離職|不幹/, lines: ['不要走！拜託不要走！', '公司不能沒有你啊！'] },
+    { re: /騙子|騙|說謊|謊|不算話|食言/, lines: ['我再也不說謊了！我發誓！', '我說話一定算話！求你相信我！', '以後我說的每一句都是真的！'] },
+    { re: /甩鍋|推卸|怪別人|卸責/, lines: ['是我的錯！全部都是我的錯！', '鍋我自己背！我不甩了！', '不關別人的事，都是我害的！'] },
+    { re: /自私|自私自利/, lines: ['我改！以後先想到別人！', '我的東西全部分你！求你別罵了！'] },
+    { re: /良心|沒良心/, lines: ['我的良心回來了！真的回來了！', '我良心好痛…對不起…'] },
+    { re: /臉皮|不要臉/, lines: ['我要臉！我以後要臉了！', '我臉皮好薄好薄…別再罵了…'] },
+    { re: /滾/, lines: ['我滾！我馬上滾！', '拜託不要趕我走，我會乖的！'] },
   ];
 
   const KEYWORDS = ['豬頭','笨蛋','白痴','白癡','混蛋','垃圾','廢物','智障','王八','機車','慣老闆','無能','可惡','討厭','摳門','小氣','變態','奴隸','過勞','壓榨','剝削','爛','滾','雞排','慣','情緒勒索','畫大餅','大餅','吸血','黑心','血汗','垃圾','笑話','去你的','靠','幹','加班','薪水','年終','爛人','甩鍋','自私','良心','臉皮','騙子','謊','渣'];
@@ -614,7 +614,7 @@
     render();
     $('#hitCount').textContent = `已出手 ${hits} 次`;
     const st = stageFor(rage);
-    const line = rage >= 100 ? '我…我不行了……（當場崩潰）' : pickLine(text, st);
+    const line = rage >= 100 ? '我錯了……我真的錯了……（當場崩潰）' : pickLine(text, st);
     lastLine = line;
     say(line); speak(line, st);
     if (rage >= 100) knockOut();
@@ -907,7 +907,7 @@
     $('#hitCount').textContent = `已出手 ${hits} 次`;
     const st = stageFor(rage);
     let line;
-    if (rage >= 100) line = '我…我不行了……（當場崩潰）';
+    if (rage >= 100) line = '我錯了……我真的錯了……（當場崩潰）';
     else if (st.key !== 'breakdown' && Math.random() < .7) {
       let tries = 0;
       do { line = W.ouch[Math.floor(Math.random() * W.ouch.length)]; } while (line === lastLine && tries++ < 5);
@@ -1010,7 +1010,7 @@
     $('#ko').classList.remove('show');
     $('#hitCount').textContent = '已出手 0 次';
     $('#marksHead').replaceChildren(); $('#marksBody').replaceChildren(); bumpR = 0;
-    render(); speakLine('哼…剛剛是我一時失態。好了，回去工作吧！');
+    render(); speakLine('呼…剛剛真的很對不起，我們重新來過好不好？');
   }
   $('#again').onclick = reset;
 
@@ -1021,7 +1021,7 @@
       const before = stageFor(rage);
       rage = Math.max(0, rage - 0.6);
       render();
-      if (stageFor(rage) !== before && rage < 15) speakLine('呼…好險。哼，你剛剛說什麼來著？');
+      if (stageFor(rage) !== before && rage < 15) speakLine('呼…你原諒我了嗎？謝謝你…');
     }
   }, 100);
 
