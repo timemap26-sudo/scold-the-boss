@@ -176,6 +176,14 @@
         <rect x="150" y="88" width="180" height="220" rx="30" fill="#6e4030"/>
 
         <g id="bossBody">
+          <!-- neck (photo mode): sits behind the face photo, coloured from the photo's skin -->
+          <g class="photo-only" id="neck">
+            <defs><linearGradient id="neckShade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".45" stop-color="#000" stop-opacity=".08"/>
+              <stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient></defs>
+            <path id="neckSkin" d="M214,196 L266,196 Q264,226 270,246 L210,246 Q216,226 214,196 Z" fill="#e8b591"/>
+            <path d="M214,196 L266,196 Q264,226 270,246 L210,246 Q216,226 214,196 Z" fill="url(#neckShade)"/>
+          </g>
           <!-- suit -->
           <path d="M140,330 Q146,248 240,238 Q334,248 340,330 Z" fill="#2f3d5c" stroke="#2a2420" stroke-width="5"/>
           <path d="M212,242 L240,300 L268,242 Q240,236 212,242 Z" fill="#fff" stroke="#2a2420" stroke-width="4"/>
@@ -881,6 +889,19 @@
     return out;
   }
 
+  // average colour of both cheeks, for the neck
+  function skinTone(img) {
+    const px = [];
+    for (const cx0 of [220, 260]) for (let dy = -6; dy <= 6; dy += 2) for (let dx = -6; dx <= 6; dx += 2) {
+      const x = Math.round((cx0 + dx - OX) * K), y = Math.round((174 + dy - OY) * K), i = (y * PW + x) * 4;
+      if (img.data[i + 3] > 200) px.push([img.data[i], img.data[i + 1], img.data[i + 2]]);
+    }
+    if (!px.length) return '#e8b591';
+    px.sort((a, b) => (a[0] + a[1] + a[2]) - (b[0] + b[1] + b[2]));     // drop darkest/brightest quarter
+    const mid = px.slice(px.length >> 2, px.length - (px.length >> 2)), n = mid.length;
+    const avg = j => Math.round(mid.reduce((t, p) => t + p[j], 0) / n);
+    return `rgb(${avg(0)},${avg(1)},${avg(2)})`;
+  }
   let faceUrls = null;
   function buildFaces(baseUrl, my) {
     return new Promise((res, rej) => {
@@ -892,6 +913,7 @@
         if (img.width === 320 && img.height === 380) g.drawImage(img, (160 - OX) * K, (60 - OY) * K);
         else g.drawImage(img, 0, 0, PW, PH);
         const base = g.getImageData(0, 0, PW, PH), ex = expressions(my), urls = {};
+        urls.skin = skinTone(base);
         for (const k in ex) {
           g.putImageData(warp(base, ex[k]), 0, 0);
           g.globalCompositeOperation = 'destination-in'; softMask(g); g.globalCompositeOperation = 'source-over';
@@ -910,7 +932,7 @@
     faceUrls = urls; boss.classList.toggle('photo', !!urls);
     boss.querySelectorAll('.pmouth').forEach(g => g.setAttribute('transform', `translate(0 ${my})`));
     $('#photoBtn').textContent = urls ? '📷 換一張照片' : '📷 上傳老闆照片';
-    if (urls) showPhotoFace(); else photoEl.removeAttribute('href');
+    if (urls) { showPhotoFace(); $('#neckSkin').setAttribute('fill', urls.skin); } else photoEl.removeAttribute('href');
   }
   async function applyBase(baseUrl, my) { setPhoto(await buildFaces(baseUrl, my), my); }
 
