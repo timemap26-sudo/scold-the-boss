@@ -138,7 +138,7 @@
     text-align:center;box-shadow:0 6px 0 var(--ink);max-height:100%;overflow:auto}
   .modal h2{margin:0 0 4px;font-size:22px}
   .modal .note{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.45}
-  #alignCanvas{width:min(240px,70vw);aspect-ratio:320/380;border:3px solid var(--ink);border-radius:12px;background:#ddd;
+  #alignCanvas{width:min(240px,70vw);aspect-ratio:416/480;border:3px solid var(--ink);border-radius:12px;background:#ddd;
     touch-action:none;cursor:grab;display:block;margin:0 auto}
   #alignCanvas:active{cursor:grabbing}
   .slider{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;font-weight:700}
@@ -270,7 +270,7 @@
 
             <!-- ===== uploaded photo face ===== -->
             <g class="photo-only">
-              <image id="bossPhoto" x="160" y="60" width="160" height="190" preserveAspectRatio="none"/>
+              <image id="bossPhoto" x="136" y="20" width="208" height="240" preserveAspectRatio="none"/>
               <g data-show="nervous sorry sad cry">
                 <ellipse cx="197" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
                 <ellipse cx="283" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
@@ -389,7 +389,7 @@
   <div class="card">
     <h2 id="photoTitle">對準老闆的臉</h2>
     <p class="note">拖曳照片，讓老闆的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線。</p>
-    <canvas id="alignCanvas" width="320" height="380"></canvas>
+    <canvas id="alignCanvas" width="416" height="480"></canvas>
     <div id="detectStatus"></div>
     <label class="slider">🔍<input type="range" id="zoomIn" min="-2" max="2" step="0.01" value="0"></label>
     <label class="slider">↻<input type="range" id="rotIn" min="-45" max="45" step="0.5" value="0"></label>
@@ -684,7 +684,9 @@
   // ---------- boss photo face ----------
   const VISION = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const FACE_MODEL = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite';
-  const PW = 320, PH = 380, OX = 160, OY = 60, K = 2;           // photo canvas = svg box (160,60)-(320,250) at 2x
+  const PW = 416, PH = 480, OX = 136, OY = 20, K = 2;           // photo canvas = svg box (136,20)-(344,260) at 2x
+  // head oval (svg units) — big enough to keep the hair, not just the face
+  const HCX = 240, HCY = 138, HRX = 96, HRY = 110, HC = { x: (HCX - OX) * K, y: (HCY - OY) * K };
   const EYE_L = { x: (211 - OX) * K, y: (146 - OY) * K }, EYE_R = { x: (269 - OX) * K, y: (146 - OY) * K };
   const MOUTH_Y = 210;                                          // default mouth line (svg units)
   const photoEl = $('#bossPhoto'), modal = $('#photoModal'), cv = $('#alignCanvas'), cx = cv.getContext('2d');
@@ -696,8 +698,8 @@
     return { x: t.tx + t.s * (c * p.x - s * p.y), y: t.ty + t.s * (s * p.x + c * p.y) }; };
 
   function fitDefault(img) {
-    const s = Math.max(2 * 148 / img.width, 2 * 168 / img.height) * 1.05;
-    return { s, rot: 0, tx: PW / 2 - s * img.width / 2, ty: 184 - s * img.height / 2 };
+    const s = Math.max(2 * HRX * K / img.width, 2 * HRY * K / img.height) * 1.05;
+    return { s, rot: 0, tx: HC.x - s * img.width / 2, ty: HC.y - s * img.height / 2 };
   }
   function fitEyes(a, b) {
     if (a.x > b.x) [a, b] = [b, a];
@@ -715,13 +717,13 @@
   }
   // feathered oval so the face blends in without a hard frame
   function softMask(ctx) {
-    const cxp = (240 - OX) * K, cyp = (152 - OY) * K, rx = 74 * K, ry = 84 * K;
+    const cxp = HC.x, cyp = HC.y, rx = HRX * K, ry = HRY * K;
     ctx.save(); ctx.translate(cxp, cyp); ctx.scale(1, ry / rx);
     const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
     gr.addColorStop(0, '#000'); gr.addColorStop(.8, '#000'); gr.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   }
-  const headPath = ctx => { ctx.beginPath(); ctx.ellipse((240 - OX) * K, (152 - OY) * K, 74 * K, 84 * K, 0, 0, Math.PI * 2); };
+  const headPath = ctx => { ctx.beginPath(); ctx.ellipse(HC.x, HC.y, HRX * K, HRY * K, 0, 0, Math.PI * 2); };
 
   function drawAlign() {
     cx.clearRect(0, 0, PW, PH);
@@ -729,7 +731,7 @@
     drawPhoto(cx, tf);
     // dim outside head
     cx.save(); cx.fillStyle = 'rgba(40,30,25,.55)'; cx.beginPath(); cx.rect(0, 0, PW, PH);
-    cx.ellipse((240 - OX) * K, (152 - OY) * K, 74 * K, 84 * K, 0, 0, Math.PI * 2); cx.fill('evenodd'); cx.restore();
+    cx.ellipse(HC.x, HC.y, HRX * K, HRY * K, 0, 0, Math.PI * 2); cx.fill('evenodd'); cx.restore();
     cx.lineWidth = 3; cx.strokeStyle = '#fff'; headPath(cx); cx.stroke();
     cx.setLineDash([6, 5]); cx.strokeStyle = '#ffdf3b';
     [EYE_L, EYE_R].forEach(e => { cx.beginPath(); cx.arc(e.x, e.y, 14, 0, Math.PI * 2); cx.stroke(); });
@@ -740,7 +742,7 @@
   // set sliders relative to the current transform
   function syncSliders() { baseZoom = tf.s; baseRot = tf.rot; zoomIn.value = 0; rotIn.value = 0; }
   function around(t, k, dr) {   // zoom by k and rotate by dr around the head centre
-    const c = { x: PW / 2, y: 184 }, cs = Math.cos(dr), sn = Math.sin(dr);
+    const c = HC, cs = Math.cos(dr), sn = Math.sin(dr);
     const vx = t.tx - c.x, vy = t.ty - c.y;
     return { s: t.s * k, rot: t.rot + dr, tx: c.x + k * (cs * vx - sn * vy), ty: c.y + k * (sn * vx + cs * vy) };
   }
@@ -800,13 +802,13 @@
   }
   // second pass: detect again on the straightened face (keypoints are less accurate on tilted heads)
   function refine(det, t) {
-    const S = 480, k = .75, ox = S / 2 - k * PW / 2, oy = S / 2 - k * 184;
+    const S = 480, k = .75, ox = S / 2 - k * HC.x, oy = S / 2 - k * HC.y;
     const c = document.createElement('canvas'); c.width = c.height = S;
     const g = c.getContext('2d'); g.fillStyle = '#888'; g.fillRect(0, 0, S, S);
     drawPhoto(g, { s: t.s * k, rot: t.rot, tx: t.tx * k + ox, ty: t.ty * k + oy });
     const d = (det.detect(c).detections || []).filter(d => d.keypoints && d.keypoints.length >= 4)
       .map(d => ({ d, kp: d.keypoints.map(q => ({ x: (q.x * S - ox) / k, y: (q.y * S - oy) / k })) }))
-      .sort((a, b) => Math.hypot(a.kp[2].x - PW / 2, a.kp[2].y - 184) - Math.hypot(b.kp[2].x - PW / 2, b.kp[2].y - 184))[0];
+      .sort((a, b) => Math.hypot(a.kp[2].x - HC.x, a.kp[2].y - HC.y) - Math.hypot(b.kp[2].x - HC.x, b.kp[2].y - HC.y))[0];
     if (!d) return null;
     const B = fitEyes(d.kp[0], d.kp[1]), tA = apply(B, { x: t.tx, y: t.ty });
     return { tf: { s: B.s * t.s, rot: B.rot + t.rot, tx: tA.x, ty: tA.y }, mouth: apply(B, d.kp[3]) };
@@ -885,7 +887,10 @@
       const img = new Image();
       img.onload = () => {
         const c = document.createElement('canvas'); c.width = PW; c.height = PH;
-        const g = c.getContext('2d'); g.drawImage(img, 0, 0, PW, PH);
+        const g = c.getContext('2d');
+        // photos saved by the older, smaller face box (320x380 at svg 160,60): place them where they belong
+        if (img.width === 320 && img.height === 380) g.drawImage(img, (160 - OX) * K, (60 - OY) * K);
+        else g.drawImage(img, 0, 0, PW, PH);
         const base = g.getImageData(0, 0, PW, PH), ex = expressions(my), urls = {};
         for (const k in ex) {
           g.putImageData(warp(base, ex[k]), 0, 0);
