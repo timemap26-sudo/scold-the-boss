@@ -124,6 +124,28 @@
   .fly.late{animation-delay:.35s}
   @keyframes flytear{0%{transform:translate(0,0);opacity:1}100%{transform:translate(-60px,40px);opacity:0}}
   @keyframes flytearR{0%{transform:translate(0,0);opacity:1}100%{transform:translate(60px,40px);opacity:0}}
+  /* ---------- photo mode ---------- */
+  #boss.photo .cartoon{display:none!important}
+  #boss:not(.photo) .photo-only{display:none!important}
+  #bossPhoto{transition:filter .6s}
+  #boss[data-state=sad] #bossPhoto{filter:saturate(.8) brightness(.97)}
+  #boss[data-state=cry] #bossPhoto{filter:saturate(1.25) sepia(.15) brightness(.97)}
+  #boss[data-state=breakdown] #bossPhoto{filter:grayscale(.4) sepia(.3) hue-rotate(170deg) saturate(1.6) brightness(1.05)}
+  #photoBtn{background:#fff;color:var(--ink)}
+  .modal{position:fixed;inset:0;background:rgba(30,20,15,.6);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
+  .modal.show{display:flex}
+  .modal .card{background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:16px;max-width:380px;width:100%;
+    text-align:center;box-shadow:0 6px 0 var(--ink);max-height:100%;overflow:auto}
+  .modal h2{margin:0 0 4px;font-size:22px}
+  .modal .note{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.45}
+  #alignCanvas{width:min(240px,70vw);aspect-ratio:320/380;border:3px solid var(--ink);border-radius:12px;background:#ddd;
+    touch-action:none;cursor:grab;display:block;margin:0 auto}
+  #alignCanvas:active{cursor:grabbing}
+  .slider{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;font-weight:700}
+  .slider input{flex:1}
+  .modal .btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+  .modal .btns button{flex:1;min-width:90px}
+  #detectStatus{min-height:1.3em;font-size:13px;color:var(--muted);margin-top:6px}
   @media (prefers-reduced-motion:reduce){*{animation-duration:0s!important}}
 </style>
 </head>
@@ -162,10 +184,13 @@
 
           <g id="head">
             <!-- ears -->
+            <g class="cartoon">
             <ellipse class="skin" cx="166" cy="160" rx="13" ry="19" stroke="#2a2420" stroke-width="5"/>
             <ellipse class="skin" cx="314" cy="160" rx="13" ry="19" stroke="#2a2420" stroke-width="5"/>
+            </g>
             <!-- head -->
             <ellipse class="skin" cx="240" cy="152" rx="74" ry="84" stroke="#2a2420" stroke-width="5"/>
+            <g class="cartoon">
             <!-- side hair -->
             <path d="M168,150 Q164,108 186,92 Q178,120 184,150 Z" fill="#6b6460" stroke="#2a2420" stroke-width="4"/>
             <path d="M312,150 Q316,108 294,92 Q302,120 296,150 Z" fill="#6b6460" stroke="#2a2420" stroke-width="4"/>
@@ -241,6 +266,33 @@
             <!-- nose & mustache -->
             <ellipse cx="240" cy="182" rx="9" ry="7" fill="#e9a77c" stroke="#2a2420" stroke-width="3"/>
             <path d="M212,198 Q226,186 240,196 Q254,186 268,198 Q254,204 240,200 Q226,204 212,198 Z" fill="#4b4542" stroke="#2a2420" stroke-width="3"/>
+            </g>
+
+            <!-- ===== uploaded photo face ===== -->
+            <g class="photo-only">
+              <image id="bossPhoto" x="160" y="60" width="160" height="190" preserveAspectRatio="none"/>
+              <ellipse cx="240" cy="152" rx="74" ry="84" fill="none" stroke="#2a2420" stroke-width="5"/>
+              <g data-show="nervous sorry sad cry">
+                <ellipse cx="197" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
+                <ellipse cx="283" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
+              </g>
+              <g data-show="sad">
+                <path class="drop" d="M209,160 q-5,9 0,12 q5,-3 0,-12 Z" fill="#7cc4f0" stroke="#2a2420" stroke-width="1.5"/>
+                <path class="drop d2" d="M271,160 q-5,9 0,12 q5,-3 0,-12 Z" fill="#7cc4f0" stroke="#2a2420" stroke-width="1.5"/>
+              </g>
+              <g class="pmouth" data-show="cry">
+                <path d="M219,-8 Q240,-19 261,-8 Q258,20 240,22 Q222,20 219,-8 Z" fill="#5a1f1a" stroke="#2a2420" stroke-width="3" opacity=".88"/>
+                <path d="M229,14 Q240,6 251,14 Q240,21 229,14 Z" fill="#e2716b" opacity=".9"/>
+              </g>
+              <g data-show="breakdown">
+                <circle cx="211" cy="146" r="13" fill="#fff" stroke="#2a2420" stroke-width="2"/>
+                <circle cx="269" cy="146" r="13" fill="#fff" stroke="#2a2420" stroke-width="2"/>
+                <path class="spiral" d="M211,146 a2,2 0 1,1 4,0 a4,4 0 1,1 -8,0 a6,6 0 1,1 12,0 a8,8 0 1,1 -16,0 a10,10 0 1,1 20,0" fill="none" stroke="#2a2420" stroke-width="2.5"/>
+                <path class="spiral" d="M269,146 a2,2 0 1,1 4,0 a4,4 0 1,1 -8,0 a6,6 0 1,1 12,0 a8,8 0 1,1 -16,0 a10,10 0 1,1 20,0" fill="none" stroke="#2a2420" stroke-width="2.5"/>
+                <g class="pmouth"><ellipse cx="240" cy="4" rx="19" ry="23" fill="#5a1f1a" stroke="#2a2420" stroke-width="3" opacity=".9"/>
+                <path d="M228,17 Q240,9 252,17 Q240,26 228,17 Z" fill="#e2716b"/></g>
+              </g>
+            </g>
 
             <!-- sweat -->
             <g data-show="nervous sorry">
@@ -315,10 +367,12 @@
     <div class="row">
       <button type="button" id="micBtn"><span id="micLabel">🎙️ 開麥克風罵</span><span class="lvl"><i id="lvl"></i></span></button>
       <button type="button" id="soundBtn" class="secondary" aria-pressed="true">🔊 老闆語音</button>
+      <button type="button" id="photoBtn">📷 上傳老闆照片</button>
+      <input type="file" id="photoFile" accept="image/*" hidden>
     </div>
     <div class="caption" id="caption"></div>
     <div class="chips" id="chips"></div>
-    <p class="hint">提示：用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。</p>
+    <p class="hint">提示：用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
   </div>
 </main>
 
@@ -329,6 +383,22 @@
     <p>最狠的一句：</p>
     <div class="quote" id="koQuote"></div>
     <button type="button" id="again">再罵一輪 🔁</button>
+  </div>
+</div>
+
+<div class="modal" id="photoModal" role="dialog" aria-modal="true" aria-labelledby="photoTitle">
+  <div class="card">
+    <h2 id="photoTitle">對準老闆的臉</h2>
+    <p class="note">拖曳照片，讓老闆的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線。</p>
+    <canvas id="alignCanvas" width="320" height="380"></canvas>
+    <div id="detectStatus"></div>
+    <label class="slider">🔍<input type="range" id="zoomIn" min="-2" max="2" step="0.01" value="0"></label>
+    <label class="slider">↻<input type="range" id="rotIn" min="-45" max="45" step="0.5" value="0"></label>
+    <div class="btns">
+      <button type="button" id="photoOk">就是他！</button>
+      <button type="button" id="photoCancel" class="secondary">取消</button>
+    </div>
+    <div class="btns"><button type="button" id="photoReset" class="secondary">改回卡通老闆</button></div>
   </div>
 </div>
 
@@ -370,6 +440,7 @@
     boss.dataset.state = key;
     boss.querySelectorAll('[data-face]').forEach(g => g.style.display = g.dataset.face === key ? 'inline' : 'none');
     boss.querySelectorAll('[data-show]').forEach(g => g.style.display = g.dataset.show.split(' ').includes(key) ? 'inline' : 'none');
+    if (typeof showPhotoFace === 'function') showPhotoFace();
   }
 
   function render() {
@@ -594,6 +665,249 @@
     if (!navigator.mediaDevices && !SR) { caption.textContent = '這個瀏覽器不支援麥克風，請改用打字罵。'; return; }
     listening ? stopMic() : startMic();
   };
+
+  // ---------- boss photo face ----------
+  const VISION = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+  const FACE_MODEL = 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite';
+  const PW = 320, PH = 380, OX = 160, OY = 60, K = 2;           // photo canvas = svg box (160,60)-(320,250) at 2x
+  const EYE_L = { x: (211 - OX) * K, y: (146 - OY) * K }, EYE_R = { x: (269 - OX) * K, y: (146 - OY) * K };
+  const MOUTH_Y = 210;                                          // default mouth line (svg units)
+  const photoEl = $('#bossPhoto'), modal = $('#photoModal'), cv = $('#alignCanvas'), cx = cv.getContext('2d');
+  const zoomIn = $('#zoomIn'), rotIn = $('#rotIn'), dStatus = $('#detectStatus');
+  let src = null, tf = null, baseZoom = 1, baseRot = 0, mouthY = MOUTH_Y, faces = null;
+
+  // canvas = T + R(rot) * s * photo
+  const apply = (t, p) => { const c = Math.cos(t.rot), s = Math.sin(t.rot);
+    return { x: t.tx + t.s * (c * p.x - s * p.y), y: t.ty + t.s * (s * p.x + c * p.y) }; };
+
+  function fitDefault(img) {
+    const s = Math.max(2 * 148 / img.width, 2 * 168 / img.height) * 1.05;
+    return { s, rot: 0, tx: PW / 2 - s * img.width / 2, ty: 184 - s * img.height / 2 };
+  }
+  function fitEyes(a, b) {
+    if (a.x > b.x) [a, b] = [b, a];
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const s = (EYE_R.x - EYE_L.x) / Math.hypot(dx, dy), rot = -Math.atan2(dy, dx);
+    const t = { s, rot, tx: 0, ty: 0 }, p = apply(t, a);
+    t.tx = EYE_L.x - p.x; t.ty = EYE_L.y - p.y;
+    return t;
+  }
+
+  function drawPhoto(ctx, t) {
+    const c = Math.cos(t.rot), s = Math.sin(t.rot);
+    ctx.setTransform(t.s * c, t.s * s, -t.s * s, t.s * c, t.tx, t.ty);
+    ctx.drawImage(src, 0, 0); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+  const headPath = ctx => { ctx.beginPath(); ctx.ellipse((240 - OX) * K, (152 - OY) * K, 74 * K, 84 * K, 0, 0, Math.PI * 2); };
+
+  function drawAlign() {
+    cx.clearRect(0, 0, PW, PH);
+    cx.fillStyle = '#ccc'; cx.fillRect(0, 0, PW, PH);
+    drawPhoto(cx, tf);
+    // dim outside head
+    cx.save(); cx.fillStyle = 'rgba(40,30,25,.55)'; cx.beginPath(); cx.rect(0, 0, PW, PH);
+    cx.ellipse((240 - OX) * K, (152 - OY) * K, 74 * K, 84 * K, 0, 0, Math.PI * 2); cx.fill('evenodd'); cx.restore();
+    cx.lineWidth = 3; cx.strokeStyle = '#fff'; headPath(cx); cx.stroke();
+    cx.setLineDash([6, 5]); cx.strokeStyle = '#ffdf3b';
+    [EYE_L, EYE_R].forEach(e => { cx.beginPath(); cx.arc(e.x, e.y, 14, 0, Math.PI * 2); cx.stroke(); });
+    const my = (mouthY - OY) * K;
+    cx.beginPath(); cx.moveTo(PW / 2 - 34, my); cx.lineTo(PW / 2 + 34, my); cx.stroke(); cx.setLineDash([]);
+  }
+
+  // set sliders relative to the current transform
+  function syncSliders() { baseZoom = tf.s; baseRot = tf.rot; zoomIn.value = 0; rotIn.value = 0; }
+  function around(t, k, dr) {   // zoom by k and rotate by dr around the head centre
+    const c = { x: PW / 2, y: 184 }, cs = Math.cos(dr), sn = Math.sin(dr);
+    const vx = t.tx - c.x, vy = t.ty - c.y;
+    return { s: t.s * k, rot: t.rot + dr, tx: c.x + k * (cs * vx - sn * vy), ty: c.y + k * (sn * vx + cs * vy) };
+  }
+  function onSlider() {
+    const want = { s: baseZoom * Math.pow(2, +zoomIn.value), rot: baseRot + (+rotIn.value) * Math.PI / 180 };
+    tf = around(tf, want.s / tf.s, want.rot - tf.rot); drawAlign();
+  }
+  zoomIn.oninput = rotIn.oninput = onSlider;
+  cv.addEventListener('wheel', e => { e.preventDefault(); zoomIn.value = Math.max(-2, Math.min(2, +zoomIn.value - e.deltaY * .002)); onSlider(); }, { passive: false });
+
+  // drag (one finger / mouse) and pinch (two fingers)
+  const ptrs = new Map(); let pinch0 = null;
+  cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); pinch0 = null; });
+  cv.addEventListener('pointermove', e => {
+    if (!ptrs.has(e.pointerId) || !tf) return;
+    const r = PW / cv.clientWidth, prev = ptrs.get(e.pointerId);
+    if (ptrs.size === 1) { tf.tx += (e.clientX - prev.x) * r; tf.ty += (e.clientY - prev.y) * r; }
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) {
+      const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch0) { zoomIn.value = Math.max(-2, Math.min(2, +zoomIn.value + Math.log2(d / pinch0))); onSlider(); }
+      pinch0 = d;
+    }
+    drawAlign();
+  });
+  const up = e => { ptrs.delete(e.pointerId); pinch0 = null; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+
+  let detectorP = null, detector = null;
+  function getDetector() {
+    if (!detectorP) {
+      detectorP = import(VISION + '/vision_bundle.mjs').then(async v => {
+        const fs = await v.FilesetResolver.forVisionTasks(VISION + '/wasm');
+        return v.FaceDetector.createFromOptions(fs, {
+          baseOptions: { modelAssetPath: FACE_MODEL, delegate: 'CPU' }, runningMode: 'IMAGE', minDetectionConfidence: .35 });
+      });
+      detectorP.catch(() => { detectorP = null; });
+    }
+    return detectorP;
+  }
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+
+  async function autoAlign(token) {
+    dStatus.textContent = '🔎 正在找老闆的臉…';
+    try {
+      const det = await withTimeout(getDetector(), 20000);
+      if (token !== loadToken) return;
+      detector = det;
+      const res = det.detect(src);
+      faces = (res.detections || []).filter(d => d.keypoints && d.keypoints.length >= 4)
+        .sort((a, b) => b.boundingBox.width * b.boundingBox.height - a.boundingBox.width * a.boundingBox.height);
+      if (!faces.length) { dStatus.textContent = '找不到臉 😅 請手動拖曳對準。'; return; }
+      useFace(0);
+    } catch (e) {
+      if (token === loadToken) dStatus.textContent = '自動對位無法使用，請手動拖曳對準。';
+    }
+  }
+  // second pass: detect again on the straightened face (keypoints are less accurate on tilted heads)
+  function refine(det, t) {
+    const S = 480, k = .75, ox = S / 2 - k * PW / 2, oy = S / 2 - k * 184;
+    const c = document.createElement('canvas'); c.width = c.height = S;
+    const g = c.getContext('2d'); g.fillStyle = '#888'; g.fillRect(0, 0, S, S);
+    drawPhoto(g, { s: t.s * k, rot: t.rot, tx: t.tx * k + ox, ty: t.ty * k + oy });
+    const d = (det.detect(c).detections || []).filter(d => d.keypoints && d.keypoints.length >= 4)
+      .map(d => ({ d, kp: d.keypoints.map(q => ({ x: (q.x * S - ox) / k, y: (q.y * S - oy) / k })) }))
+      .sort((a, b) => Math.hypot(a.kp[2].x - PW / 2, a.kp[2].y - 184) - Math.hypot(b.kp[2].x - PW / 2, b.kp[2].y - 184))[0];
+    if (!d) return null;
+    const B = fitEyes(d.kp[0], d.kp[1]), tA = apply(B, { x: t.tx, y: t.ty });
+    return { tf: { s: B.s * t.s, rot: B.rot + t.rot, tx: tA.x, ty: tA.y }, mouth: apply(B, d.kp[3]) };
+  }
+  function useFace(i) {
+    const k = faces[i].keypoints, P = q => ({ x: q.x * src.width, y: q.y * src.height });
+    tf = fitEyes(P(k[0]), P(k[1]));
+    let m = apply(tf, P(k[3]));
+    try { const r = refine(detector, tf); if (r) { tf = r.tf; m = r.mouth; } } catch (e) {}
+    mouthY = Math.max(194, Math.min(230, OY + m.y / K + 4));
+    syncSliders(); drawAlign();
+    dStatus.innerHTML = faces.length > 1
+      ? `✅ 找到 ${faces.length} 張臉 <a href="#" id="nextFace">換下一張</a>` : '✅ 已自動對準，可再微調。';
+    const nf = $('#nextFace'); if (nf) nf.onclick = ev => { ev.preventDefault(); useFace((i + 1) % faces.length); };
+  }
+
+  let loadToken = 0;
+  function openPhoto(file) {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const sc = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight));
+      src = document.createElement('canvas');
+      src.width = Math.round(img.naturalWidth * sc); src.height = Math.round(img.naturalHeight * sc);
+      src.getContext('2d').drawImage(img, 0, 0, src.width, src.height);
+      mouthY = MOUTH_Y; faces = null;
+      tf = fitDefault(src); syncSliders(); drawAlign();
+      modal.classList.add('show');
+      autoAlign(++loadToken);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); caption.textContent = '這張照片打不開，換一張試試。'; };
+    img.src = url;
+  }
+
+  // ----- expressions: local warps of the aligned face -----
+  function expressions(my) {
+    const L = 211, R = 269, E = 146, B = 129;
+    const mv = (x, y, dx, dy, r) => ({ t: 'm', x, y, dx, dy, r });
+    const sc = (x, y, sx, sy, r) => ({ t: 's', x, y, sx, sy, r });
+    const both = (f, ...a) => [f(L, ...a), f(R, ...a)];
+    return {
+      calm: [mv(L - 6, B, 0, 4, 12), mv(R + 6, B, 0, -3, 12), mv(260, my, 1, -5, 10), mv(220, my, 0, -1, 10), ...both(sc, E, 1, .88, 11)],
+      nervous: [...both(mv, B, 0, -6, 15), ...both(sc, E, 1.12, 1.22, 12), sc(240, my, .82, .9, 18), mv(240, my, 0, 2, 16)],
+      sorry: [mv(226, B, 0, -8, 11), mv(254, B, 0, -8, 11), mv(L - 10, B, 0, 3, 10), mv(R + 10, B, 0, 3, 10),
+        ...both(sc, E, 1.04, .7, 12), mv(220, my, -1, 5, 9), mv(260, my, 1, 5, 9)],
+      sad: [mv(226, B, 0, -10, 12), mv(254, B, 0, -10, 12), mv(L - 10, B + 2, 0, 4, 10), mv(R + 10, B + 2, 0, 4, 10),
+        ...both(sc, E, 1.08, 1.1, 12), mv(220, my, -1, 8, 9), mv(260, my, 1, 8, 9), mv(240, my - 3, 0, -2, 8)],
+      cry: [mv(226, B, 0, -11, 12), mv(254, B, 0, -11, 12), ...both(sc, E, 1.06, .5, 12),
+        mv(220, my, -3, 9, 10), mv(260, my, 3, 9, 10), sc(240, my + 4, 1.25, 1.35, 20), mv(240, my + 22, 0, 6, 22)],
+      breakdown: [...both(sc, E, 1.3, 1.3, 14), mv(240, B - 25, 0, -6, 30), sc(240, my + 4, 1.4, 1.8, 22), mv(240, my + 24, 0, 12, 26)],
+    };
+  }
+  function warp(base, ctrls) {
+    const out = new ImageData(PW, PH), d = base.data, o = out.data;
+    const cs = ctrls.map(c => ({ ...c, x: (c.x - OX) * K, y: (c.y - OY) * K, r2: (c.r * K) ** 2, dx: (c.dx || 0) * K, dy: (c.dy || 0) * K }));
+    for (let y = 0; y < PH; y++) for (let x = 0; x < PW; x++) {
+      let qx = x, qy = y;
+      for (const c of cs) {
+        const w = Math.exp(-((x - c.x) ** 2 + (y - c.y) ** 2) / c.r2);
+        if (w < .002) continue;
+        if (c.t === 'm') { qx -= w * c.dx; qy -= w * c.dy; }
+        else { qx = c.x + (qx - c.x) / (1 + w * (c.sx - 1)); qy = c.y + (qy - c.y) / (1 + w * (c.sy - 1)); }
+      }
+      const x0 = Math.floor(qx), y0 = Math.floor(qy), fx = qx - x0, fy = qy - y0, i = (y * PW + x) * 4;
+      if (x0 < 0 || y0 < 0 || x0 >= PW - 1 || y0 >= PH - 1) continue;
+      const a = (y0 * PW + x0) * 4, b = a + 4, c2 = a + PW * 4, e = c2 + 4;
+      for (let k = 0; k < 4; k++)
+        o[i + k] = (d[a + k] * (1 - fx) + d[b + k] * fx) * (1 - fy) + (d[c2 + k] * (1 - fx) + d[e + k] * fx) * fy;
+    }
+    return out;
+  }
+
+  let faceUrls = null;
+  function buildFaces(baseUrl, my) {
+    return new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas'); c.width = PW; c.height = PH;
+        const g = c.getContext('2d'); g.drawImage(img, 0, 0, PW, PH);
+        const base = g.getImageData(0, 0, PW, PH), ex = expressions(my), urls = {};
+        for (const k in ex) {
+          g.putImageData(warp(base, ex[k]), 0, 0);
+          g.globalCompositeOperation = 'destination-in'; headPath(g); g.fill(); g.globalCompositeOperation = 'source-over';
+          urls[k] = c.toDataURL('image/png');
+        }
+        res(urls);
+      };
+      img.onerror = rej; img.src = baseUrl;
+    });
+  }
+  function showPhotoFace() {
+    if (!faceUrls) return;
+    photoEl.setAttribute('href', faceUrls[boss.dataset.state] || faceUrls.calm);
+  }
+  function setPhoto(urls, my) {
+    faceUrls = urls; boss.classList.toggle('photo', !!urls);
+    boss.querySelectorAll('.pmouth').forEach(g => g.setAttribute('transform', `translate(0 ${my})`));
+    $('#photoBtn').textContent = urls ? '📷 換一張照片' : '📷 上傳老闆照片';
+    if (urls) showPhotoFace(); else photoEl.removeAttribute('href');
+  }
+  async function applyBase(baseUrl, my) { setPhoto(await buildFaces(baseUrl, my), my); }
+
+  $('#photoBtn').onclick = () => { $('#photoFile').value = ''; $('#photoFile').click(); };
+  $('#photoFile').onchange = e => { const f = e.target.files[0]; if (f) openPhoto(f); };
+  $('#photoCancel').onclick = () => { loadToken++; modal.classList.remove('show'); };
+  $('#photoReset').onclick = () => {
+    loadToken++; modal.classList.remove('show'); setPhoto(null, MOUTH_Y);
+    try { localStorage.removeItem('stb.photo'); } catch (e) {}
+  };
+  $('#photoOk').onclick = async () => {
+    loadToken++;
+    const c = document.createElement('canvas'); c.width = PW; c.height = PH;
+    const g = c.getContext('2d'); drawPhoto(g, tf);
+    const baseUrl = c.toDataURL('image/png'), my = mouthY;
+    modal.classList.remove('show');
+    await applyBase(baseUrl, my);
+    say('欸？你怎麼有我的照片？！');
+    try { localStorage.setItem('stb.photo', JSON.stringify({ img: baseUrl, my })); } catch (e) {}
+  };
+  // previously chosen boss face
+  try {
+    const saved = JSON.parse(localStorage.getItem('stb.photo') || 'null');
+    if (saved && saved.img) applyBase(saved.img, saved.my || MOUTH_Y).catch(() => {});
+  } catch (e) {}
 
   setState('calm'); render();
 })();
