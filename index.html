@@ -393,7 +393,7 @@
   <div class="meter">
     <label for="bar">崩潰值</label>
     <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div></div>
-    <span class="stagename" id="stageName">淡定｜血量 160/160</span>
+    <span class="stagename" id="stageName">淡定｜血量 300/300</span>
   </div>
   <div class="stats"><span id="hitCount">已出手 0 次</span><span id="timer">0.0 秒</span></div>
 
@@ -468,7 +468,7 @@
 
   const QUICK = ['你這個爛人！', '說話不算話！', '只會甩鍋給別人！', '臉皮比城牆還厚！', '自私自利的傢伙！', '你良心被狗吃了嗎？', '騙子！滿嘴謊話！', '給我滾遠一點！'];
 
-  const MAX_HP = 160;                                              // more HP than before (was 100)
+  const MAX_HP = 300;                                              // more HP (was 160)
   const hpOf = r => Math.ceil(MAX_HP * (1 - Math.min(100, r) / 100));
   let rage = 0, hits = 0, startTime = 0, lastHit = 0, ko = false;
   let best = { text: '', dmg: 0 }, lastLine = '';
