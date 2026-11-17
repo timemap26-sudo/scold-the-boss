@@ -478,17 +478,35 @@
     isMale = !!voice && MALE.test(voice.name) && !FEMALE.test(voice.name);
   }
   if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  // Pre-rendered clips: free Microsoft Edge neural Taiwan-Mandarin male voice
+  // (zh-TW-YunJheNeural), made by tools/gen_voice.py. Named by FNV-1a hash of the text.
+  const clean = line => line.replace(/（.*?）/g, '').trim();
+  const fnv = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); };
+  const clip = new Audio(); clip.preload = 'auto';
+  let clipPlaying = false;
+  clip.onplaying = () => clipPlaying = true;
+  clip.onended = clip.onpause = () => clipPlaying = false;
   function speak(line, st) {
+    if (!soundOn) return;
+    const text = clean(line);
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    clip.pause();
+    clip.onerror = () => { clipPlaying = false; speakTTS(text, st); };
+    clip.src = 'voice/' + fnv(text) + '.mp3';
+    clip.play().catch(e => { if (e.name !== 'AbortError') speakTTS(text, st); });
+  }
+  function speakTTS(text, st) {
     if (!soundOn || !('speechSynthesis' in window)) return;
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(line.replace(/（.*?）/g, ''));
+    const u = new SpeechSynthesisUtterance(text);
     u.lang = voice ? voice.lang : 'zh-TW'; if (voice) u.voice = voice;
     // No male voice available → drop pitch so a female/default voice sounds deeper.
     u.pitch = Math.max(0.1, isMale ? st.pitch : st.pitch * 0.6);
     u.rate = st.rate;
     speechSynthesis.speak(u);
   }
-  const bossTalking = () => 'speechSynthesis' in window && speechSynthesis.speaking;
+  const speakLine = line => { say(line); speak(line, curStage); };
+  const bossTalking = () => clipPlaying || ('speechSynthesis' in window && speechSynthesis.speaking);
 
   // ---------- sfx ----------
   let actx = null;
@@ -577,7 +595,7 @@
     rage = 0; hits = 0; startTime = 0; ko = false; best = { text: '', dmg: 0 };
     $('#ko').classList.remove('show');
     $('#hitCount').textContent = '已罵 0 句';
-    render(); say('哼…剛剛是我一時失態。好了，回去工作吧！');
+    render(); speakLine('哼…剛剛是我一時失態。好了，回去工作吧！');
   }
   $('#again').onclick = reset;
 
@@ -588,7 +606,7 @@
       const before = stageFor(rage);
       rage = Math.max(0, rage - 0.6);
       render();
-      if (stageFor(rage) !== before && rage < 15) say('呼…好險。哼，你剛剛說什麼來著？');
+      if (stageFor(rage) !== before && rage < 15) speakLine('呼…好險。哼，你剛剛說什麼來著？');
     }
   }, 100);
 
@@ -604,7 +622,7 @@
     soundOn = !soundOn;
     e.currentTarget.textContent = soundOn ? '🔊 老闆語音' : '🔇 靜音';
     e.currentTarget.setAttribute('aria-pressed', soundOn);
-    if (!soundOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+    if (!soundOn) { clip.pause(); if ('speechSynthesis' in window) speechSynthesis.cancel(); }
   };
 
   // ---------- microphone ----------
@@ -923,7 +941,7 @@
     const baseUrl = c.toDataURL('image/png'), my = mouthY;
     modal.classList.remove('show');
     await applyBase(baseUrl, my);
-    say('欸？你怎麼有我的照片？！');
+    speakLine('欸？你怎麼有我的照片？！');
     try { localStorage.setItem('stb.photo', JSON.stringify({ img: baseUrl, my })); } catch (e) {}
   };
   // previously chosen boss face
