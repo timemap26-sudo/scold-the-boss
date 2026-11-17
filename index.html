@@ -909,9 +909,7 @@
       img.onload = () => {
         const c = document.createElement('canvas'); c.width = PW; c.height = PH;
         const g = c.getContext('2d');
-        // photos saved by the older, smaller face box (320x380 at svg 160,60): place them where they belong
-        if (img.width === 320 && img.height === 380) g.drawImage(img, (160 - OX) * K, (60 - OY) * K);
-        else g.drawImage(img, 0, 0, PW, PH);
+        g.drawImage(img, 0, 0, PW, PH);
         const base = g.getImageData(0, 0, PW, PH), ex = expressions(my), urls = {};
         urls.skin = skinTone(base);
         for (const k in ex) {
@@ -941,7 +939,6 @@
   $('#photoCancel').onclick = () => { loadToken++; modal.classList.remove('show'); };
   $('#photoReset').onclick = () => {
     loadToken++; modal.classList.remove('show'); setPhoto(null, MOUTH_Y);
-    try { localStorage.removeItem('stb.photo'); } catch (e) {}
   };
   $('#photoOk').onclick = async () => {
     loadToken++;
@@ -951,13 +948,9 @@
     modal.classList.remove('show');
     await applyBase(baseUrl, my);
     say('欸？你怎麼有我的照片？！');
-    try { localStorage.setItem('stb.photo', JSON.stringify({ img: baseUrl, my })); } catch (e) {}
   };
-  // previously chosen boss face
-  try {
-    const saved = JSON.parse(localStorage.getItem('stb.photo') || 'null');
-    if (saved && saved.img) applyBase(saved.img, saved.my || MOUTH_Y).catch(() => {});
-  } catch (e) {}
+  // always start with the cartoon boss; drop any photo an older version kept in this browser
+  try { localStorage.removeItem('stb.photo'); } catch (e) {}
 
   setState('calm'); render();
 })();
