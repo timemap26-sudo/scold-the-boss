@@ -161,6 +161,8 @@
   .fx.burst span{font-size:clamp(30px,8vw,48px)}
   .fx.big span{font-size:clamp(96px,28vw,170px)}
   .fx.burst.word span{font-size:clamp(28px,8vw,46px);font-weight:900;color:#ffdf3b;-webkit-text-stroke:2px #2a2420;white-space:nowrap}
+  #bossAll.zap{animation:zap .5s steps(1)}
+  @keyframes zap{0%,40%,80%{transform:translate(-4px,0);filter:brightness(1.8) contrast(1.4)}20%,60%{transform:translate(4px,1px);filter:invert(1)}100%{transform:none;filter:none}}
   .stage.quake{animation:quake .4s}
   @keyframes quake{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
   .fx svg{position:absolute;right:0;top:-10px;width:64px;height:20px;overflow:visible}
@@ -181,7 +183,7 @@
 <body>
 <header>
   <h1>罵<span>老闆</span> 🤬</h1>
-  <p class="sub">用麥克風大聲罵、打字罵，還能賞巴掌、射飛鏢、揍他、丟拖鞋、丟雞蛋、砸派、平底鍋、拿大鐵鎚敲他的頭！</p>
+  <p class="sub">用麥克風大聲罵、打字罵，還能賞巴掌、射飛鏢、揍他、丟拖鞋、丟雞蛋、丟番茄、砸派、鹹魚甩臉、水球、電擊、丟鞭炮，還能拿大鐵鎚敲他的頭！</p>
 </header>
 
 <main>
@@ -415,7 +417,7 @@
     </div>
     <div class="caption" id="caption"></div>
     <div class="chips" id="chips"></div>
-    <p class="hint">提示：巴掌會留下紅手印、揍他會瘀青、飛鏢會插在身上、鐵鎚敲頭會腫包冒星星；拖鞋留鞋印、雞蛋流蛋黃、派糊滿臉、平底鍋噹一聲，大鐵鎚傷害最高。用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
+    <p class="hint">提示：巴掌會留下紅手印、揍他會瘀青、飛鏢會插在身上、鐵鎚敲頭會腫包冒星星；拖鞋留鞋印、雞蛋流蛋黃、派糊滿臉、番茄噴汁、鹹魚留魚鱗、水球淋濕、電擊讓頭髮豎起來、鞭炮把臉炸黑，大鐵鎚傷害最高。用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
   </div>
 </main>
 
@@ -624,7 +626,7 @@
   }
 
   // shake the boss, flash the stage and pop a damage number at (left%, top%)
-  const JOLTS = ['hit', 'slapL', 'slapR', 'punch', 'smash'];
+  const JOLTS = ['hit', 'slapL', 'slapR', 'punch', 'smash', 'zap'];
   function jolt(cls, dmg, left, top) {
     bossAll.classList.remove(...JOLTS); void bossAll.getBBox(); bossAll.classList.add(cls);
     const f = $('#flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
@@ -643,9 +645,14 @@
     slipper: { icon: '🩴', name: '丟拖鞋', dmg: [6, 9],  ouch: ['拖鞋？！你把我當蟑螂喔！', '臉上都是鞋印啦！', '這是藍白拖吧…好痛！', '誰的拖鞋啦！好臭！'] },
     egg:    { icon: '🥚', name: '丟雞蛋', dmg: [3, 6],   ouch: ['噁！蛋黃流下來了！', '我的西裝很貴耶！', '不要浪費食物啦！', '黏黏的…好噁心…'] },
     pie:    { icon: '🥧', name: '砸派',   dmg: [5, 8],   ouch: ['噗！我什麼都看不到！', '整臉都是奶油啦！', '甜的…可是我好生氣！', '我的眼鏡！我的頭髮！'] },
-    pan:    { icon: '🍳', name: '平底鍋', dmg: [11, 15], ouch: ['噹！我的頭在響…', '平、平底鍋？！你是廚師喔！', '耳朵嗡嗡叫…', '臉都被打扁了啦！'] },
+    fish:   { icon: '🐟', name: '鹹魚甩臉', dmg: [8, 11], ouch: ['好腥！是鹹魚！', '臉上都是魚鱗啦！', '我今天中午不吃魚了…', '你從哪裡拿來的鹹魚啦！'] },
+    tomato: { icon: '🍅', name: '丟番茄', dmg: [3, 6],   ouch: ['番茄？！我又不是在演戲！', '整件襯衫都紅了啦！', '好酸…流到嘴巴裡了！', '不要再丟了，我要吃沙拉啦！'] },
+    balloon:{ icon: '🎈', name: '水球',   dmg: [4, 7],   ouch: ['哇！全身濕透了！', '好冰好冰好冰！', '我的髮型！我的髮膠！', '這是辦公室不是潑水節啦！'] },
+    zap:    { icon: '⚡', name: '電擊',   dmg: [10, 14], ouch: ['滋滋滋…我、我被電到了…', '頭髮都豎起來了啦！', '我看到我的骨頭了！', '電、電費你出喔…'] },
+    firecracker: { icon: '🧨', name: '丟鞭炮', dmg: [12, 17], ouch: ['碰！我的耳朵！', '臉都被炸黑了啦！', '現在又不是過年！', '咳咳…滿臉都是煙…'] },
   };
-  const THROWN = { slipper: { x: 560, y: 360, spin: 900 }, egg: { x: -80, y: 380, spin: -540 } };   // thrown in from the sides
+  const THROWN = { slipper: { x: 560, y: 360, spin: 900 }, egg: { x: -80, y: 380, spin: -540 }, tomato: { x: 560, y: 80, spin: 540 },
+                   balloon: { x: -80, y: 120, spin: -180 }, firecracker: { x: 560, y: 420, spin: 720 } };   // thrown in from the sides
   const SVGNS = 'http://www.w3.org/2000/svg';
   const mk = (tag, attrs, parent) => {
     const e = document.createElementNS(SVGNS, tag);
@@ -665,7 +672,7 @@
     const ph = isPhoto();
     if (kind === 'slap') { const side = x < 240 ? -1 : 1; return { x: 240 + side * (ph ? 30 : 44), y: ph ? 172 : 184, head: true, side }; }
     if (kind === 'hammer') return { x: 240 + Math.max(-24, Math.min(24, x - 240)), y: ph ? 62 : 74, head: true };
-    if (kind === 'pan') { const side = x < 240 ? -1 : 1; return { x: 240 + side * (ph ? 40 : 56), y: ph ? 120 : 132, head: true, side }; }
+    if (kind === 'fish') { const side = x < 240 ? -1 : 1; return { x: 240 + side * (ph ? 40 : 56), y: ph ? 120 : 132, head: true, side }; }
     if (kind === 'pie') return { x: 240, y: ph ? 150 : 158, head: true };
     x = Math.max(150, Math.min(330, x)); y = Math.max(70, Math.min(300, y));
     return { x, y, head: onHead(x, y) };
@@ -674,7 +681,7 @@
   function autoTarget(kind) {
     if (kind === 'slap') return aim(kind, Math.random() < .5 ? 200 : 280, 180);
     if (kind === 'hammer') return aim(kind, rnd(220, 260), 70);
-    if (kind === 'pan') return aim(kind, Math.random() < .5 ? 200 : 280, 130);
+    if (kind === 'fish') return aim(kind, Math.random() < .5 ? 200 : 280, 130);
     if (kind === 'pie') return aim(kind, 240, 150);
     if (kind === 'punch') return Math.random() < .6 ? aim(kind, rnd(205, 275), rnd(140, 200)) : aim(kind, rnd(200, 280), rnd(255, 295));
     return Math.random() < .55 ? aim(kind, rnd(190, 290), rnd(100, 210)) : aim(kind, rnd(170, 310), rnd(250, 300));
@@ -697,7 +704,7 @@
   // the weapon flying in, as an html overlay on the stage
   function flyIn(kind, t, done) {
     const el = document.createElement('div'), p = pct(t), w = stage.clientWidth, sc = w / 480;
-    el.className = kind === 'hammer' || kind === 'pan' ? 'fx big' : 'fx'; el.style.left = p.left + '%'; el.style.top = p.top + '%';
+    el.className = kind === 'hammer' ? 'fx big' : 'fx'; el.style.left = p.left + '%'; el.style.top = p.top + '%';
     let frames, dur;
     if (THROWN[kind]) {
       const T = THROWN[kind], dx = (T.x - t.x) * sc, dy = (T.y - t.y) * sc;
@@ -728,12 +735,17 @@
         const dy = (460 - t.y) * sc;
         frames = [{ transform: `translate(0,${dy}px) scale(.6)` }, { transform: 'translate(0,0) scale(1.9)' }];
         dur = 240;
-      } else if (kind === 'pan') {
-        const s = t.side, flip = s < 0 ? 1 : -1;
-        frames = [{ transform: `translate(${s * 120 * sc}px,${-90 * sc}px) rotate(${s * 70}deg) scaleX(${flip})`, opacity: .3 },
-                  { transform: `translate(${s * 130 * sc}px,${-80 * sc}px) rotate(${s * 80}deg) scaleX(${flip})`, opacity: 1, offset: .35 },
-                  { transform: `translate(${s * 30 * sc}px,0) rotate(${s * -10}deg) scaleX(${flip})`, opacity: 1 }];
-        dur = 280;
+      } else if (kind === 'fish') {
+        // a salted fish swung by the tail into the cheek
+        const s = t.side, flip = s < 0 ? -1 : 1;
+        frames = [{ transform: `translate(${s * 140 * sc}px,${-70 * sc}px) rotate(${s * -80}deg) scaleX(${flip}) scale(1.4)`, opacity: .3 },
+                  { transform: `translate(${s * 120 * sc}px,${-40 * sc}px) rotate(${s * -50}deg) scaleX(${flip}) scale(1.4)`, opacity: 1, offset: .4 },
+                  { transform: `translate(${s * 10 * sc}px,0) rotate(${s * 10}deg) scaleX(${flip}) scale(1.4)`, opacity: 1 }];
+        dur = 240;
+      } else if (kind === 'zap') {
+        // lightning straight down from the sky
+        frames = [{ transform: `translate(0,${-340 * sc}px) scale(1.2,3)`, opacity: .4 }, { transform: 'translate(0,0) scale(1.6)', opacity: 1 }];
+        dur = 140;
       } else {
         // the big hammer: raised high behind the head, then brought down hard
         // sizes are in units of the emoji so the hammer head lands right on the target
@@ -746,7 +758,7 @@
     }
     stage.appendChild(el);
     const anim = el.animate(frames, { duration: dur, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' });
-    anim.onfinish = () => { done(); setTimeout(() => el.remove(), kind === 'dart' ? 0 : kind === 'hammer' || kind === 'pan' ? 260 : 140); };
+    anim.onfinish = () => { done(); setTimeout(() => el.remove(), kind === 'dart' ? 0 : kind === 'hammer' ? 260 : 140); };
   }
 
   function burst(emoji, t) {
@@ -812,12 +824,50 @@
       mk('circle', { cx: t.x + 4, cy: t.y - 30, r: 6, fill: '#d8322a', stroke: '#2a2420', 'stroke-width': 1.5 }, g);
       mk('path', { d: `M${t.x + 6},${t.y - 35} q4,-8 10,-10`, fill: 'none', stroke: '#3b7d2a', 'stroke-width': 2 }, g);
       fadeMark(g, 6000);
-    } else if (kind === 'pan') {
-      // a flat red patch where the pan hit
+    } else if (kind === 'fish') {
+      // a wet, shiny streak with a few scales stuck on
+      const g = mk('g', { class: 'mark', transform: `rotate(${t.side * -25} ${t.x} ${t.y})` }, layer);
+      mk('ellipse', { cx: t.x, cy: t.y, rx: 12, ry: 26, fill: '#9fd3ea', opacity: .5 }, g);
+      mk('ellipse', { cx: t.x - 3, cy: t.y - 8, rx: 3, ry: 9, fill: '#fff', opacity: .6 }, g);
+      for (let i = 0; i < 5; i++) mk('path', { d: `M${t.x + rnd(-9, 9)},${t.y + rnd(-18, 18)} a4,4 0 0,1 8,0`, fill: '#d9e6ee', stroke: '#7a97a8', 'stroke-width': 1 }, g);
+      fadeMark(g, 7000);
+    } else if (kind === 'tomato') {
+      // a red splat with seeds and a drip
       const g = mk('g', { class: 'mark' }, layer);
-      mk('ellipse', { cx: t.x, cy: t.y, rx: 20, ry: 26, fill: '#e04a3a', opacity: .4 }, g);
-      mk('ellipse', { cx: t.x, cy: t.y, rx: 12, ry: 16, fill: '#c22a1e', opacity: .3 }, g);
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + rnd(0, .4), r = rnd(10, 18); mk('circle', { cx: t.x + Math.cos(a) * r, cy: t.y + Math.sin(a) * r * .85, r: rnd(4, 8), fill: '#e0352b', opacity: .85 }, g); }
+      mk('circle', { cx: t.x, cy: t.y, r: 15, fill: '#e0352b', opacity: .9 }, g);
+      mk('path', { d: `M${t.x + 2},${t.y + 8} q-2,22 2,34 q3,4 5,0 q1,-18 -2,-34 Z`, fill: '#c9281f', opacity: .85 }, g);
+      for (let i = 0; i < 5; i++) mk('ellipse', { cx: t.x + rnd(-9, 9), cy: t.y + rnd(-8, 8), rx: 2, ry: 1.2, fill: '#f6e27a' }, g);
+      mk('path', { d: `M${t.x - 6},${t.y - 14} l6,-5 l6,5 l-6,-1 Z`, fill: '#3b8a2a' }, g);
       fadeMark(g, 8000);
+    } else if (kind === 'balloon') {
+      // a big splash over the head, drips running off, a scrap of balloon
+      const g = mk('g', { class: 'mark' }, layer);
+      mk('circle', { cx: t.x, cy: t.y, r: 46, fill: '#5bb6e8', opacity: .3 }, g);
+      for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2, r = rnd(40, 56); mk('circle', { cx: t.x + Math.cos(a) * r, cy: t.y + Math.sin(a) * r, r: rnd(4, 8), fill: '#5bb6e8', opacity: .5 }, g); }
+      for (const dx of [-30, -8, 16, 34]) mk('ellipse', { class: 'drop' + (dx > 0 ? ' d2' : ''), cx: t.x + dx, cy: t.y + 30, rx: 4, ry: 6, fill: '#5bb6e8', opacity: .8 }, g);
+      mk('path', { d: `M${t.x + 18},${t.y - 30} l10,-4 l-3,9 l7,2 l-12,4 Z`, fill: '#e2483d', stroke: '#2a2420', 'stroke-width': 1.2 }, g);
+      fadeMark(g, 5000);
+    } else if (kind === 'zap') {
+      // scorched spot and hair standing straight up
+      const scorch = mk('g', { class: 'mark' }, layer);
+      mk('circle', { cx: t.x, cy: t.y, r: 14, fill: '#2a2420', opacity: .4 }, scorch);
+      fadeMark(scorch, 6000);
+      const g = mk('g', { class: 'mark' }, $('#marksHead')), top = isPhoto() ? 46 : 60;
+      for (let i = -4; i <= 4; i++) {
+        const x = 240 + i * 13, h = (30 + rnd(0, 18) - Math.abs(i) * 2) / 3;
+        mk('path', { d: `M${x},${top + Math.abs(i) * 4} l-5,-${h.toFixed(0)} l8,-${h.toFixed(0)} l-5,-${h.toFixed(0)}`, fill: 'none', stroke: '#3a2f28', 'stroke-width': 3.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+      }
+      for (let i = 0; i < 3; i++) { const e = mk('text', { x: 240 + rnd(-60, 60), y: top - rnd(10, 40), 'font-size': 20, 'text-anchor': 'middle' }, g); e.textContent = '⚡'; setTimeout(() => e.remove(), 900); }
+      fadeMark(g, 4000);
+    } else if (kind === 'firecracker') {
+      // soot all over and a puff of smoke
+      const g = mk('g', { class: 'mark' }, layer);
+      for (let i = 0; i < 9; i++) mk('circle', { cx: t.x + rnd(-26, 26), cy: t.y + rnd(-22, 22), r: rnd(6, 14), fill: '#2a2420', opacity: rnd(.35, .6).toFixed(2) }, g);
+      const smoke = mk('g', { class: 'mark' }, layer);
+      for (let i = 0; i < 6; i++) mk('circle', { cx: t.x + rnd(-30, 30), cy: t.y - rnd(20, 60), r: rnd(10, 18), fill: '#b9b4ad', opacity: .7 }, smoke);
+      fadeMark(smoke, 600);
+      fadeMark(g, 9000);
     } else if (kind === 'hammer') {
       // one bump that swells with every hit, plus circling stars
       bumpR = bumpR ? Math.min(30, bumpR + 5) : 14;
@@ -848,11 +898,14 @@
     rage = Math.min(100, rage + dmg);
     const p = pct(t);
     const side = t.side || (t.x < 240 ? -1 : 1);
-    const JOLT = { slap: side < 0 ? 'slapL' : 'slapR', pan: side < 0 ? 'slapL' : 'slapR', dart: 'hit', egg: 'hit', slipper: 'hit', pie: 'punch', punch: 'punch', hammer: 'smash' };
-    const BURST = { slap: '💢', dart: '✨', egg: '💦', slipper: '啪！', pie: '噗！', punch: '💥', pan: '噹！！', hammer: '咚！！' };
+    const JOLT = { slap: side < 0 ? 'slapL' : 'slapR', fish: side < 0 ? 'slapL' : 'slapR', dart: 'hit', egg: 'hit', slipper: 'hit', tomato: 'hit', balloon: 'punch',
+                   pie: 'punch', punch: 'punch', hammer: 'smash', firecracker: 'smash', zap: 'zap' };
+    const BURST = { slap: '💢', dart: '✨', egg: '💦', slipper: '啪！', pie: '噗！', punch: '💥', fish: '啪噠！', hammer: '咚！！',
+                    tomato: '噗滋！', balloon: '嘩啦！', zap: '滋滋滋！', firecracker: '碰！！' };
+    if (kind === 'firecracker') burst('💥', { x: t.x + 20, y: t.y - 10 });
     jolt(JOLT[kind], dmg, p.left, Math.max(6, p.top - 8));
     burst(BURST[kind], t);
-    if (kind === 'hammer' || kind === 'pan') { stage.classList.remove('quake'); void stage.offsetWidth; stage.classList.add('quake'); }
+    if (kind === 'hammer' || kind === 'firecracker') { stage.classList.remove('quake'); void stage.offsetWidth; stage.classList.add('quake'); }
     addMark(kind, t);
     weaponSfx(kind, 'hit');
     render();
@@ -896,7 +949,9 @@
       const a = audio(), t = a.currentTime;
       if (phase === 'swing') {
         if (kind === 'dart') noise(a, t, .22, 'bandpass', 700, .25, 3200);
-        else if (kind === 'hammer' || kind === 'pan') noise(a, t, .32, 'bandpass', 250, .35, 900);
+        else if (kind === 'zap') tone(a, t, 'sawtooth', 200, 1600, .14, .12);
+        else if (kind === 'firecracker') noise(a, t, .35, 'highpass', 3000, .15, 6000);
+        else if (kind === 'hammer') noise(a, t, .32, 'bandpass', 250, .35, 900);
         else if (THROWN[kind]) noise(a, t, .3, 'bandpass', 600, .2, 2000);
         else noise(a, t, .14, 'bandpass', 500, .18, 1500);
         return;
@@ -907,9 +962,13 @@
       else if (kind === 'slipper') { noise(a, t, .09, 'bandpass', 1200, .9); tone(a, t, 'sine', 200, 90, .08, .4); }
       else if (kind === 'egg') { noise(a, t, .05, 'highpass', 3000, .6); noise(a, t, .25, 'lowpass', 900, .5, 200); }
       else if (kind === 'pie') { noise(a, t, .3, 'lowpass', 700, .8, 150); tone(a, t, 'sine', 180, 60, .15, .4); }
-      else if (kind === 'pan') {
-        tone(a, t, 'sine', 140, 60, .2, .8); noise(a, t, .05, 'highpass', 2500, .5);
-        [610, 1290, 2140, 3030].forEach((f, i) => tone(a, t, 'triangle', f, f * .995, 1.1 - i * .15, .18));
+      else if (kind === 'fish') { noise(a, t, .12, 'bandpass', 700, .9); noise(a, t, .2, 'lowpass', 500, .4, 150); tone(a, t, 'sine', 180, 80, .1, .4); }
+      else if (kind === 'tomato') { noise(a, t, .3, 'lowpass', 1100, .8, 180); tone(a, t, 'sine', 140, 60, .12, .4); }
+      else if (kind === 'balloon') { noise(a, t, .04, 'highpass', 2500, 1); noise(a, t, .6, 'bandpass', 1200, .6, 300); }
+      else if (kind === 'zap') { tone(a, t, 'sawtooth', 110, 95, .5, .25); tone(a, t, 'square', 220, 180, .4, .1); noise(a, t, .45, 'highpass', 4000, .35); }
+      else if (kind === 'firecracker') {
+        noise(a, t, .5, 'lowpass', 900, 1, 80); tone(a, t, 'sine', 80, 30, .4, .9);
+        for (let i = 1; i < 6; i++) noise(a, t + i * .07 + Math.random() * .03, .05, 'highpass', 1500, .6);
       }
       else {
         tone(a, t, 'sine', 90, 30, .45, 1); tone(a, t, 'sine', 160, 50, .2, .6); noise(a, t, .08, 'lowpass', 1200, .6);
