@@ -189,7 +189,7 @@
             <ellipse class="skin" cx="314" cy="160" rx="13" ry="19" stroke="#2a2420" stroke-width="5"/>
             </g>
             <!-- head -->
-            <ellipse class="skin" cx="240" cy="152" rx="74" ry="84" stroke="#2a2420" stroke-width="5"/>
+            <ellipse class="skin cartoon" cx="240" cy="152" rx="74" ry="84" stroke="#2a2420" stroke-width="5"/>
             <g class="cartoon">
             <!-- side hair -->
             <path d="M168,150 Q164,108 186,92 Q178,120 184,150 Z" fill="#6b6460" stroke="#2a2420" stroke-width="4"/>
@@ -271,7 +271,6 @@
             <!-- ===== uploaded photo face ===== -->
             <g class="photo-only">
               <image id="bossPhoto" x="160" y="60" width="160" height="190" preserveAspectRatio="none"/>
-              <ellipse cx="240" cy="152" rx="74" ry="84" fill="none" stroke="#2a2420" stroke-width="5"/>
               <g data-show="nervous sorry sad cry">
                 <ellipse cx="197" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
                 <ellipse cx="283" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
@@ -714,6 +713,14 @@
     ctx.setTransform(t.s * c, t.s * s, -t.s * s, t.s * c, t.tx, t.ty);
     ctx.drawImage(src, 0, 0); ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
+  // feathered oval so the face blends in without a hard frame
+  function softMask(ctx) {
+    const cxp = (240 - OX) * K, cyp = (152 - OY) * K, rx = 74 * K, ry = 84 * K;
+    ctx.save(); ctx.translate(cxp, cyp); ctx.scale(1, ry / rx);
+    const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+    gr.addColorStop(0, '#000'); gr.addColorStop(.8, '#000'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
   const headPath = ctx => { ctx.beginPath(); ctx.ellipse((240 - OX) * K, (152 - OY) * K, 74 * K, 84 * K, 0, 0, Math.PI * 2); };
 
   function drawAlign() {
@@ -882,7 +889,7 @@
         const base = g.getImageData(0, 0, PW, PH), ex = expressions(my), urls = {};
         for (const k in ex) {
           g.putImageData(warp(base, ex[k]), 0, 0);
-          g.globalCompositeOperation = 'destination-in'; headPath(g); g.fill(); g.globalCompositeOperation = 'source-over';
+          g.globalCompositeOperation = 'destination-in'; softMask(g); g.globalCompositeOperation = 'source-over';
           urls[k] = c.toDataURL('image/png');
         }
         res(urls);
