@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>罵老闆</title>
-<meta name="description" content="用麥克風或打字狠狠罵老闆，看他道歉、哭、崩潰給你看。">
+<title>罵爛人遊戲</title>
+<meta name="description" content="罵爛人遊戲：用麥克風或打字狠狠罵爛人，看他道歉、哭、崩潰給你看。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😭</text></svg>">
 <style>
   :root{
@@ -182,13 +182,13 @@
 </head>
 <body>
 <header>
-  <h1>罵<span>老闆</span> 🤬</h1>
+  <h1>罵<span>爛人</span>遊戲 🤬</h1>
   <p class="sub">用麥克風大聲罵、打字罵，還能賞巴掌、射飛鏢、揍他、丟拖鞋、丟雞蛋、丟番茄、砸派、鹹魚甩臉、水球、電擊、丟鞭炮，還能拿大鐵鎚敲他的頭！</p>
 </header>
 
 <main>
   <div class="stage" id="stage">
-    <svg viewBox="0 0 480 420" aria-label="坐在老闆桌後面的卡通老闆">
+    <svg viewBox="0 0 480 420" aria-label="站著挨罵的卡通爛人">
       <!-- wall decor -->
       <g>
         <rect x="24" y="30" width="110" height="90" rx="6" fill="#bfe1f2" stroke="#2a2420" stroke-width="4"/>
@@ -196,15 +196,12 @@
         <line x1="24" y1="75" x2="134" y2="75" stroke="#2a2420" stroke-width="4"/>
         <circle cx="52" cy="54" r="10" fill="#fff6c9"/>
         <rect x="362" y="150" width="96" height="70" rx="4" fill="#fff" stroke="#2a2420" stroke-width="4"/>
-        <text x="410" y="176" text-anchor="middle" font-size="12" font-weight="800" fill="#2a2420">本月最佳員工</text>
-        <text x="410" y="203" text-anchor="middle" font-size="18" font-weight="900" fill="#e2483d">老闆本人</text>
+        <text x="410" y="176" text-anchor="middle" font-size="12" font-weight="800" fill="#2a2420">本月最爛的人</text>
+        <text x="410" y="203" text-anchor="middle" font-size="18" font-weight="900" fill="#e2483d">就是他</text>
       </g>
 
       <g id="boss" data-state="calm">
        <g id="bossAll">
-        <!-- chair -->
-        <rect x="132" y="70" width="216" height="260" rx="40" fill="#5a3326" stroke="#2a2420" stroke-width="5"/>
-        <rect x="150" y="88" width="180" height="220" rx="30" fill="#6e4030"/>
 
         <g id="bossBody">
           <!-- neck (photo mode): sits behind the face photo, coloured from the photo's skin -->
@@ -215,6 +212,11 @@
             <path id="neckSkin" d="M218,200 L262,200 Q260,226 267,246 L213,246 Q220,226 218,200 Z" fill="#e8b591"/>
             <path d="M218,200 L262,200 Q260,226 267,246 L213,246 Q220,226 218,200 Z" fill="url(#neckShade)"/>
           </g>
+          <!-- legs (standing) -->
+          <path d="M184,322 L200,398 L236,398 L240,340 L244,398 L280,398 L296,322 Z" fill="#26324d" stroke="#2a2420" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M240,340 L240,398" stroke="#2a2420" stroke-width="3"/>
+          <path d="M194,396 Q186,396 180,404 Q178,412 190,412 L236,412 L236,396 Z" fill="#2a2420"/>
+          <path d="M286,396 Q294,396 300,404 Q302,412 290,412 L244,412 L244,396 Z" fill="#2a2420"/>
           <!-- suit -->
           <path d="M140,330 Q146,248 240,238 Q334,248 340,330 Z" fill="#2f3d5c" stroke="#2a2420" stroke-width="5"/>
           <path d="M212,242 L240,300 L268,242 Q240,236 212,242 Z" fill="#fff" stroke="#2a2420" stroke-width="4"/>
@@ -355,8 +357,10 @@
 
           <!-- hands -->
           <g data-show="calm nervous sad">
-            <ellipse class="skin" cx="182" cy="308" rx="20" ry="14" stroke="#2a2420" stroke-width="4"/>
-            <ellipse class="skin" cx="298" cy="308" rx="20" ry="14" stroke="#2a2420" stroke-width="4"/>
+            <path d="M152,262 Q138,300 142,330 L162,330 Q160,300 172,270 Z" fill="#2f3d5c" stroke="#2a2420" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M328,262 Q342,300 338,330 L318,330 Q320,300 308,270 Z" fill="#2f3d5c" stroke="#2a2420" stroke-width="4" stroke-linejoin="round"/>
+            <ellipse class="skin" cx="152" cy="338" rx="13" ry="15" stroke="#2a2420" stroke-width="4"/>
+            <ellipse class="skin" cx="328" cy="338" rx="13" ry="15" stroke="#2a2420" stroke-width="4"/>
           </g>
           <g data-show="sorry">
             <!-- praying hands -->
@@ -371,22 +375,11 @@
           <g id="marksBody"></g>
         </g>
 
-        <!-- desk -->
-        <rect x="40" y="304" width="400" height="22" rx="6" fill="#a8693f" stroke="#2a2420" stroke-width="5"/>
-        <rect x="56" y="324" width="368" height="100" fill="#8c552f" stroke="#2a2420" stroke-width="5"/>
-        <line x1="240" y1="326" x2="240" y2="420" stroke="#2a2420" stroke-width="4"/>
-        <!-- tear puddle -->
-        <ellipse id="puddle" cx="240" cy="312" rx="150" ry="9" fill="#7cc4f0" stroke="#2a2420" stroke-width="2" opacity=".9"/>
-        <!-- nameplate -->
-        <rect x="176" y="338" width="128" height="40" rx="6" fill="#f5d13b" stroke="#2a2420" stroke-width="4"/>
-        <text x="240" y="365" text-anchor="middle" font-size="20" font-weight="900" fill="#2a2420">老闆 BOSS</text>
-        <!-- mug -->
-        <path d="M78,270 L110,270 L106,306 L82,306 Z" fill="#fff" stroke="#2a2420" stroke-width="4"/>
-        <path d="M110,278 q14,2 0,20" fill="none" stroke="#2a2420" stroke-width="4"/>
-        <text x="94" y="294" text-anchor="middle" font-size="10" font-weight="900" fill="#e2483d">#1</text>
-        <!-- papers -->
-        <rect x="360" y="282" width="62" height="24" fill="#fff" stroke="#2a2420" stroke-width="4" transform="rotate(-4 391 294)"/>
-        <rect x="364" y="270" width="58" height="16" fill="#fffbe9" stroke="#2a2420" stroke-width="4" transform="rotate(3 393 278)"/>
+        <!-- tear puddle at his feet -->
+        <ellipse id="puddle" cx="240" cy="412" rx="150" ry="8" fill="#7cc4f0" stroke="#2a2420" stroke-width="2" opacity=".9"/>
+        <!-- name badge -->
+        <rect x="282" y="268" width="44" height="22" rx="4" fill="#f5d13b" stroke="#2a2420" stroke-width="3"/>
+        <text x="304" y="284" text-anchor="middle" font-size="13" font-weight="900" fill="#2a2420">爛人</text>
        </g>
       </g>
     </svg>
@@ -395,35 +388,35 @@
   </div>
 
   <div class="weapons" id="weapons" role="group" aria-label="武器"></div>
-  <p class="wnote">選一個武器，再點老闆身上任何地方出手（直接按武器也會打）。</p>
+  <p class="wnote">選一個武器，再點爛人身上任何地方出手（直接按武器也會打）。</p>
 
   <div class="meter">
     <label for="bar">崩潰值</label>
     <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div></div>
-    <span class="stagename" id="stageName">淡定 0%</span>
+    <span class="stagename" id="stageName">淡定｜血量 160/160</span>
   </div>
   <div class="stats"><span id="hitCount">已出手 0 次</span><span id="timer">0.0 秒</span></div>
 
   <div class="controls">
     <form id="form" autocomplete="off">
-      <input type="text" id="text" placeholder="輸入你想罵老闆的話…" maxlength="80" enterkeyhint="send">
+      <input type="text" id="text" placeholder="輸入你想罵爛人的話…" maxlength="80" enterkeyhint="send">
       <button type="submit">罵！</button>
     </form>
     <div class="row">
       <button type="button" id="micBtn"><span id="micLabel">🎙️ 開麥克風罵</span><span class="lvl"><i id="lvl"></i></span></button>
-      <button type="button" id="soundBtn" class="secondary" aria-pressed="true">🔊 老闆語音</button>
-      <button type="button" id="photoBtn">📷 上傳老闆照片</button>
+      <button type="button" id="soundBtn" class="secondary" aria-pressed="true">🔊 爛人語音</button>
+      <button type="button" id="photoBtn">📷 上傳爛人照片</button>
       <input type="file" id="photoFile" accept="image/*" hidden>
     </div>
     <div class="caption" id="caption"></div>
     <div class="chips" id="chips"></div>
-    <p class="hint">提示：巴掌會留下紅手印、揍他會瘀青、飛鏢會插在身上、鐵鎚敲頭會腫包冒星星；拖鞋留鞋印、雞蛋流蛋黃、派糊滿臉、番茄噴汁、鹹魚留魚鱗、水球淋濕、電擊讓頭髮豎起來、鞭炮把臉炸黑，大鐵鎚傷害最高。用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
+    <p class="hint">提示：巴掌會留下紅手印、揍他會瘀青、飛鏢會插在身上、鐵鎚敲頭會腫包冒星星；拖鞋留鞋印、雞蛋流蛋黃、派糊滿臉、番茄噴汁、鹹魚留魚鱗、水球淋濕、電擊讓頭髮豎起來、鞭炮把臉炸黑，大鐵鎚傷害最高。用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，爛人會慢慢恢復囂張。上傳爛人照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
   </div>
 </main>
 
 <div class="ko" id="ko">
   <div class="card">
-    <h2>K.O.！老闆崩潰了</h2>
+    <h2>K.O.！爛人崩潰了</h2>
     <p id="koStats"></p>
     <p>最狠的一招：</p>
     <div class="quote" id="koQuote"></div>
@@ -433,8 +426,8 @@
 
 <div class="modal" id="photoModal" role="dialog" aria-modal="true" aria-labelledby="photoTitle">
   <div class="card">
-    <h2 id="photoTitle">對準老闆的臉</h2>
-    <p class="note">拖曳照片，讓老闆的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線，鼻子對齊中線。</p>
+    <h2 id="photoTitle">對準爛人的臉</h2>
+    <p class="note">拖曳照片，讓爛人的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線，鼻子對齊中線。</p>
     <canvas id="alignCanvas" width="416" height="520"></canvas>
     <div id="detectStatus"></div>
     <label class="slider">🔍<input type="range" id="zoomIn" min="-2" max="2" step="0.01" value="0"></label>
@@ -443,7 +436,7 @@
       <button type="button" id="photoOk">就是他！</button>
       <button type="button" id="photoCancel" class="secondary">取消</button>
     </div>
-    <div class="btns"><button type="button" id="photoReset" class="secondary">改回卡通老闆</button></div>
+    <div class="btns"><button type="button" id="photoReset" class="secondary">改回卡通爛人</button></div>
   </div>
 </div>
 
@@ -475,6 +468,8 @@
 
   const QUICK = ['又要加班？！', '薪水什麼時候加？', '你這個豬頭老闆！', '不要再畫大餅了！', '開會開不完！', '血汗黑心公司！', '年終呢？！', '我要放假！'];
 
+  const MAX_HP = 160;                                              // more HP than before (was 100)
+  const hpOf = r => Math.ceil(MAX_HP * (1 - Math.min(100, r) / 100));
   let rage = 0, hits = 0, startTime = 0, lastHit = 0, ko = false;
   let best = { text: '', dmg: 0 }, lastLine = '';
   let soundOn = true, curStage = STAGES[0];
@@ -494,7 +489,7 @@
     fill.style.setProperty('--p', Math.max(p, 1));
     bar.setAttribute('aria-valuenow', Math.round(p));
     const st = stageFor(p);
-    $('#stageName').textContent = `${st.label} ${Math.round(p)}%`;
+    $('#stageName').textContent = `${st.label}｜血量 ${hpOf(p)}/${MAX_HP}`;
     if (st !== curStage) { curStage = st; setState(st.key); }
   }
 
@@ -611,7 +606,7 @@
     const dmg = damageOf(text, vol);
     hits++; lastHit = performance.now();
     if (dmg > best.dmg) best = { text, dmg };
-    rage = Math.min(100, rage + dmg);
+    rage = Math.min(100, rage + dmg * 100 / MAX_HP);
 
     jolt('hit', dmg, 40 + Math.random() * 20, 22 + Math.random() * 10);
     sfx(dmg);
@@ -674,7 +669,7 @@
     if (kind === 'hammer') return { x: 240 + Math.max(-24, Math.min(24, x - 240)), y: ph ? 62 : 74, head: true };
     if (kind === 'fish') { const side = x < 240 ? -1 : 1; return { x: 240 + side * (ph ? 40 : 56), y: ph ? 120 : 132, head: true, side }; }
     if (kind === 'pie') return { x: 240, y: ph ? 150 : 158, head: true };
-    x = Math.max(150, Math.min(330, x)); y = Math.max(70, Math.min(300, y));
+    x = Math.max(150, Math.min(330, x)); y = Math.max(70, Math.min(390, y));
     return { x, y, head: onHead(x, y) };
   }
   // a random sensible target when the weapon button itself is pressed
@@ -895,7 +890,7 @@
     const dmg = Math.round(rnd(W.dmg[0], W.dmg[1]));
     hits++; lastHit = performance.now();
     if (dmg > best.dmg) best = { text: W.icon + ' ' + W.name, dmg };
-    rage = Math.min(100, rage + dmg);
+    rage = Math.min(100, rage + dmg * 100 / MAX_HP);
     const p = pct(t);
     const side = t.side || (t.x < 240 ? -1 : 1);
     const JOLT = { slap: side < 0 ? 'slapL' : 'slapR', fish: side < 0 ? 'slapL' : 'slapR', dart: 'hit', egg: 'hit', slipper: 'hit', tomato: 'hit', balloon: 'punch',
@@ -1005,7 +1000,7 @@
   function knockOut() {
     ko = true;
     const secs = ((performance.now() - startTime) / 1000).toFixed(1);
-    $('#koStats').textContent = `你用了 ${secs} 秒、出手 ${hits} 次，成功讓老闆崩潰！`;
+    $('#koStats').textContent = `你用了 ${secs} 秒、出手 ${hits} 次，成功讓爛人崩潰！`;
     $('#koQuote').textContent = `「${best.text}」（傷害 ${best.dmg}）`;
     setTimeout(() => $('#ko').classList.add('show'), 1600);
   }
@@ -1040,7 +1035,7 @@
   QUICK.forEach(q => { const b = document.createElement('button'); b.type = 'button'; b.textContent = q; b.onclick = () => scold(q); chips.appendChild(b); });
   $('#soundBtn').onclick = e => {
     soundOn = !soundOn;
-    e.currentTarget.textContent = soundOn ? '🔊 老闆語音' : '🔇 靜音';
+    e.currentTarget.textContent = soundOn ? '🔊 爛人語音' : '🔇 靜音';
     e.currentTarget.setAttribute('aria-pressed', soundOn);
     if (!soundOn) { clip.pause(); if ('speechSynthesis' in window) speechSynthesis.cancel(); }
   };
@@ -1070,7 +1065,7 @@
   async function startMic() {
     listening = true;
     micBtn.classList.add('on'); $('#micLabel').textContent = '🔴 聆聽中…點此停止';
-    caption.textContent = SR ? '開始罵吧！說完一句停一下，老闆就會挨罵。' : '這個瀏覽器不支援語音辨識，改用「音量模式」：大聲吼就能打到老闆！';
+    caption.textContent = SR ? '開始罵吧！說完一句停一下，爛人就會挨罵。' : '這個瀏覽器不支援語音辨識，改用「音量模式」：大聲吼就能打到爛人！';
     // On Android, holding the mic with getUserMedia starves SpeechRecognition,
     // so it never returns results. Only use the level meter there without SR.
     const meterOk = !SR || !/Android/i.test(navigator.userAgent);
@@ -1106,7 +1101,7 @@
     if (bossTalking()) {
       if (isEcho(t)) return;
       // Don't drop it: fire as soon as the boss stops talking.
-      pending = t; caption.textContent = '⏳ 老闆講完就罵：' + t;
+      pending = t; caption.textContent = '⏳ 爛人講完就罵：' + t;
       clearInterval(pendingTimer);
       pendingTimer = setInterval(() => {
         if (!listening) { clearInterval(pendingTimer); pending = ''; return; }
@@ -1314,7 +1309,7 @@
   const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
 
   async function autoAlign(token) {
-    dStatus.textContent = '🔎 正在找老闆的臉…';
+    dStatus.textContent = '🔎 正在找爛人的臉…';
     try {
       const det = await withTimeout(getDetector(), 20000);
       if (token !== loadToken) return;
@@ -1455,7 +1450,7 @@
   function setPhoto(urls, my) {
     faceUrls = urls; boss.classList.toggle('photo', !!urls);
     boss.querySelectorAll('.pmouth').forEach(g => g.setAttribute('transform', `translate(0 ${my})`));
-    $('#photoBtn').textContent = urls ? '📷 換一張照片' : '📷 上傳老闆照片';
+    $('#photoBtn').textContent = urls ? '📷 換一張照片' : '📷 上傳爛人照片';
     if (urls) { showPhotoFace(); $('#neckSkin').setAttribute('fill', urls.skin); } else photoEl.removeAttribute('href');
   }
   async function applyBase(baseUrl, my) { setPhoto(await buildFaces(baseUrl, my), my); }
