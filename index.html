@@ -397,7 +397,7 @@
 <div class="modal" id="photoModal" role="dialog" aria-modal="true" aria-labelledby="photoTitle">
   <div class="card">
     <h2 id="photoTitle">對準老闆的臉</h2>
-    <p class="note">拖曳照片，讓老闆的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線。</p>
+    <p class="note">拖曳照片，讓老闆的<b>兩眼</b>對準圓圈、<b>嘴巴</b>對準橫線，鼻子對齊中線。</p>
     <canvas id="alignCanvas" width="416" height="520"></canvas>
     <div id="detectStatus"></div>
     <label class="slider">🔍<input type="range" id="zoomIn" min="-2" max="2" step="0.01" value="0"></label>
@@ -773,7 +773,10 @@
     cx.setLineDash([6, 5]); cx.strokeStyle = '#ffdf3b';
     [EYE_L, EYE_R].forEach(e => { cx.beginPath(); cx.arc(e.x, e.y, 14, 0, Math.PI * 2); cx.stroke(); });
     const my = (mouthY - OY) * K;
-    cx.beginPath(); cx.moveTo(PW / 2 - 34, my); cx.lineTo(PW / 2 + 34, my); cx.stroke(); cx.setLineDash([]);
+    cx.beginPath(); cx.moveTo(PW / 2 - 34, my); cx.lineTo(PW / 2 + 34, my); cx.stroke();
+    // centre line: nose and chin go here so the head sits on the middle of the neck
+    cx.strokeStyle = 'rgba(255,255,255,.55)'; cx.lineWidth = 2; cx.setLineDash([4, 6]);
+    cx.beginPath(); cx.moveTo(HC.x, (EYE_L.y + my) / 2); cx.lineTo(HC.x, HC.y + HRY * K); cx.stroke(); cx.setLineDash([]);
   }
 
   // set sliders relative to the current transform
@@ -848,13 +851,19 @@
       .sort((a, b) => Math.hypot(a.kp[2].x - HC.x, a.kp[2].y - HC.y) - Math.hypot(b.kp[2].x - HC.x, b.kp[2].y - HC.y))[0];
     if (!d) return null;
     const B = fitEyes(...d.kp.slice(0, 2), d.kp[4], d.kp[5]), tA = apply(B, { x: t.tx, y: t.ty });
-    return { tf: { s: B.s * t.s, rot: B.rot + t.rot, tx: tA.x, ty: tA.y }, mouth: apply(B, d.kp[3]) };
+    const bb = d.d.boundingBox, box = { x: (bb.originX + bb.width / 2 - ox) / k, y: (bb.originY + bb.height / 2 - oy) / k };
+    return { tf: { s: B.s * t.s, rot: B.rot + t.rot, tx: tA.x, ty: tA.y }, mouth: apply(B, d.kp[3]),
+      mid: midX([box, d.kp[2], d.kp[3]].map(q => apply(B, q))) };
   }
+  // face midline (canvas x): face box centre, nose and mouth — the eyes alone are off-centre on a turned face
+  const midX = ps => ps.reduce((a, q) => a + q.x, 0) / ps.length;
   function useFace(i) {
     const k = faces[i].keypoints, P = q => ({ x: q.x * src.width, y: q.y * src.height });
     tf = fitEyes(P(k[0]), P(k[1]), k[4] && P(k[4]), k[5] && P(k[5]));
-    let m = apply(tf, P(k[3]));
-    try { const r = refine(detector, tf); if (r) { tf = r.tf; m = r.mouth; } } catch (e) {}
+    const bb = faces[i].boundingBox;
+    let m = apply(tf, P(k[3])), mid = midX([{ x: bb.originX + bb.width / 2, y: bb.originY + bb.height / 2 }, P(k[2]), P(k[3])].map(q => apply(tf, q)));
+    try { const r = refine(detector, tf); if (r) { tf = r.tf; m = r.mouth; mid = r.mid; } } catch (e) {}
+    tf.tx += HC.x - mid;                                        // put the face's midline on the neck
     mouthY = Math.max(194, Math.min(230, OY + m.y / K + 4));
     syncSliders(); drawAlign();
     dStatus.innerHTML = faces.length > 1
