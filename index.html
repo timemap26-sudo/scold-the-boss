@@ -523,12 +523,13 @@
   const clean = line => line.replace(/（.*?）/g, '').trim();
   const fnv = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); };
   const clip = new Audio(); clip.preload = 'auto';
-  let clipPlaying = false;
+  let clipPlaying = false, lastBossText = '';
   clip.onplaying = () => clipPlaying = true;
   clip.onended = clip.onpause = () => clipPlaying = false;
   function speak(line, st) {
     if (!soundOn) return;
     const text = clean(line);
+    lastBossText = text;
     if ('speechSynthesis' in window) speechSynthesis.cancel();
     clip.pause();
     clip.onerror = () => { clipPlaying = false; speakTTS(text, st); };
@@ -934,45 +935,122 @@
     listening = true;
     micBtn.classList.add('on'); $('#micLabel').textContent = '🔴 聆聽中…點此停止';
     caption.textContent = SR ? '開始罵吧！說完一句停一下，老闆就會挨罵。' : '這個瀏覽器不支援語音辨識，改用「音量模式」：大聲吼就能打到老闆！';
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      if (actx.state === 'suspended') await actx.resume();
-      const src = actx.createMediaStreamSource(stream);
-      analyser = actx.createAnalyser(); analyser.fftSize = 1024;
-      src.connect(analyser); meterLoop();
-    } catch (e) {
-      if (!SR) { caption.textContent = '無法使用麥克風：' + (e.message || e.name) + '。請改用打字罵。'; stopMic(); return; }
+    // On Android, holding the mic with getUserMedia starves SpeechRecognition,
+    // so it never returns results. Only use the level meter there without SR.
+    const meterOk = !SR || !/Android/i.test(navigator.userAgent);
+    if (meterOk) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+        if (!listening) { stream.getTracks().forEach(t => t.stop()); stream = null; return; }
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+        if (actx.state === 'suspended') await actx.resume();
+        const src = actx.createMediaStreamSource(stream);
+        analyser = actx.createAnalyser(); analyser.fftSize = 1024;
+        src.connect(analyser); meterLoop();
+      } catch (e) {
+        if (!SR) { caption.textContent = '無法使用麥克風：' + (e.message || e.name) + '。請改用打字罵。'; stopMic(); return; }
+      }
     }
-    if (SR) {
-      rec = new SR();
-      rec.lang = 'zh-TW'; rec.continuous = true; rec.interimResults = true;
-      rec.onresult = ev => {
-        let interim = '';
-        for (let i = ev.resultIndex; i < ev.results.length; i++) {
-          const r = ev.results[i], t = r[0].transcript;
-          if (r.isFinal) {
-            if (!bossTalking()) { scold(t, peak); peak = 0; caption.textContent = '🗣️ 你：' + t; }
-          } else interim += t;
-        }
-        if (interim) caption.textContent = '🎙️ ' + interim;
-      };
-      rec.onerror = ev => {
-        if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') {
-          caption.textContent = '麥克風權限被拒絕了，請在瀏覽器設定允許，或改用打字罵。'; stopMic();
-        } else if (ev.error === 'network') {
-          caption.textContent = '語音辨識需要網路連線，請檢查網路或改用打字罵。';
-        }
-      };
-      rec.onend = () => { if (listening) { try { rec.start(); } catch (e) {} } };
-      try { rec.start(); } catch (e) {}
+    if (SR && listening) startRec();
+  }
+
+  // ---------- speech recognition (self-healing) ----------
+  let interimText = '', interimTimer = 0, pending = '', pendingTimer = 0, restartTimer = 0, watchdog = 0, lastEvent = 0;
+  // Ignore the boss's own voice leaking back into the mic.
+  function isEcho(t) {
+    if (!lastBossText) return false;
+    const chars = [...t.replace(/[\s，。！？!?,.、]/g, '')];
+    if (!chars.length) return true;
+    const hitN = chars.filter(c => lastBossText.includes(c)).length;
+    return hitN / chars.length > 0.6;
+  }
+  function deliver(t) {
+    t = t.trim();
+    if (!t) return;
+    if (bossTalking()) {
+      if (isEcho(t)) return;
+      // Don't drop it: fire as soon as the boss stops talking.
+      pending = t; caption.textContent = '⏳ 老闆講完就罵：' + t;
+      clearInterval(pendingTimer);
+      pendingTimer = setInterval(() => {
+        if (!listening) { clearInterval(pendingTimer); pending = ''; return; }
+        if (!bossTalking()) { clearInterval(pendingTimer); const p = pending; pending = ''; if (p) fire(p); }
+      }, 150);
+      return;
     }
+    fire(t);
+  }
+  function fire(t) { scold(t, peak); peak = 0; caption.textContent = '🗣️ 你：' + t; }
+  function commitInterim() {
+    clearTimeout(interimTimer);
+    const t = interimText; interimText = '';
+    if (t) { deliver(t); recycleRec(); }   // the engine got stuck on an interim — reset it
+  }
+  function recycleRec() {
+    if (!rec) return;
+    const r = rec; rec = null;
+    r.onresult = r.onerror = r.onend = null;
+    try { r.abort(); } catch (e) {}
+    scheduleRestart(200);
+  }
+  function scheduleRestart(ms) {
+    clearTimeout(restartTimer);
+    if (listening) restartTimer = setTimeout(startRec, ms);
+  }
+  function startRec() {
+    if (!listening) return;
+    if (rec) { const r = rec; rec = null; r.onresult = r.onerror = r.onend = null; try { r.abort(); } catch (e) {} }
+    const r = new SR();
+    rec = r;
+    r.lang = 'zh-TW'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+    r.onresult = ev => {
+      if (rec !== r) return;
+      lastEvent = performance.now();
+      let interim = '';
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        const res = ev.results[i], t = res[0].transcript;
+        if (res.isFinal) { clearTimeout(interimTimer); interimText = ''; deliver(t); }
+        else interim += t;
+      }
+      if (interim) {
+        interimText = interim;
+        if (!pending) caption.textContent = '🎙️ ' + interim;
+        // Some browsers never send isFinal; treat a pause as the end of the sentence.
+        clearTimeout(interimTimer);
+        interimTimer = setTimeout(commitInterim, 1300);
+      }
+    };
+    r.onerror = ev => {
+      if (rec !== r) return;
+      if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') {
+        caption.textContent = '麥克風權限被拒絕了，請在瀏覽器設定允許，或改用打字罵。'; stopMic();
+      } else if (ev.error === 'network') {
+        caption.textContent = '語音辨識需要網路連線，請檢查網路或改用打字罵。';
+      }
+      // other errors (no-speech, aborted, audio-capture) → onend restarts
+    };
+    r.onend = () => {
+      if (rec !== r) return;
+      rec = null;
+      if (interimText) commitInterim();
+      scheduleRestart(250);
+    };
+    lastEvent = performance.now();
+    try { r.start(); } catch (e) { rec = null; scheduleRestart(600); }
+    // Watchdog: if the session silently dies (no end event), rebuild it.
+    clearInterval(watchdog);
+    watchdog = setInterval(() => {
+      if (!listening) { clearInterval(watchdog); return; }
+      if (!rec || performance.now() - lastEvent > 8000) { lastEvent = performance.now(); if (interimText) commitInterim(); else startRec(); }
+    }, 2000);
   }
 
   function stopMic() {
     listening = false;
     micBtn.classList.remove('on'); $('#micLabel').textContent = '🎙️ 開麥克風罵';
-    if (rec) { rec.onend = null; try { rec.stop(); } catch (e) {} rec = null; }
+    clearTimeout(interimTimer); clearTimeout(restartTimer); clearInterval(watchdog); clearInterval(pendingTimer);
+    interimText = ''; pending = '';
+    if (rec) { const r = rec; rec = null; r.onresult = r.onerror = r.onend = null; try { r.abort(); } catch (e) {} }
     if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
     cancelAnimationFrame(raf); analyser = null; lvlEl.style.width = '0';
   }
