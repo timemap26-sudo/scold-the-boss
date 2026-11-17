@@ -126,6 +126,8 @@
   @keyframes flytearR{0%{transform:translate(0,0);opacity:1}100%{transform:translate(60px,40px);opacity:0}}
   /* ---------- photo mode ---------- */
   #boss.photo .cartoon{display:none!important}
+  /* the shrink transform is in svg coordinates; fill-box (set on #boss *) would scale it around the image corner and push the head right */
+  #boss #photoFace{transform-box:view-box}
   #boss:not(.photo) .photo-only{display:none!important}
   #bossPhoto{transition:filter .6s}
   #boss[data-state=sad] #bossPhoto{filter:saturate(.8) brightness(.97)}
@@ -278,7 +280,7 @@
 
             <!-- ===== uploaded photo face ===== -->
             <!-- shrunk around the eye line so the photo head matches the body and the chin sits above the collar -->
-            <g class="photo-only" transform="translate(240 146) scale(.75) translate(-240 -146)">
+            <g class="photo-only" id="photoFace" transform="translate(240 146) scale(.75) translate(-240 -146)">
               <image id="bossPhoto" x="136" y="20" width="208" height="260" preserveAspectRatio="none"/>
               <g data-show="nervous sorry sad cry">
                 <ellipse cx="197" cy="180" rx="13" ry="7" fill="#ff6b6b" opacity=".35"/>
