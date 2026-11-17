@@ -148,13 +148,36 @@
   .modal .btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center}
   .modal .btns button{flex:1;min-width:90px}
   #detectStatus{min-height:1.3em;font-size:13px;color:var(--muted);margin-top:6px}
+  /* ---------- weapons ---------- */
+  .weapons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .weapons button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;background:#fff;color:var(--ink);
+    font-size:13px;line-height:1.2}
+  .weapons button b{font-size:clamp(24px,7vw,32px);line-height:1}
+  .weapons button[aria-pressed=true]{background:var(--accent-2)}
+  .wnote{margin:6px 0 0;text-align:center;color:var(--muted);font-size:13px}
+  .stage{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  .fx{position:absolute;z-index:4;width:0;height:0;pointer-events:none;line-height:1}
+  .fx span{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font-size:clamp(40px,11vw,68px)}
+  .fx.burst span{font-size:clamp(30px,8vw,48px)}
+  .fx svg{position:absolute;right:0;top:-10px;width:64px;height:20px;overflow:visible}
+  #bossAll{transform-origin:50% 100%}
+  #bossAll.slapL{animation:slapL .4s}
+  #bossAll.slapR{animation:slapR .4s}
+  @keyframes slapL{25%{transform:translate(16px,0) rotate(4deg)}60%{transform:translate(-5px,0) rotate(-1.5deg)}}
+  @keyframes slapR{25%{transform:translate(-16px,0) rotate(-4deg)}60%{transform:translate(5px,0) rotate(1.5deg)}}
+  #bossAll.punch{animation:punch .35s}
+  @keyframes punch{20%{transform:translateY(-4px) scale(.95)}55%{transform:translateY(4px) scale(1.02)}}
+  #bossAll.smash{animation:smash .45s}
+  @keyframes smash{20%{transform:translateY(10px) scaleY(.92)}50%{transform:translateY(-3px) scaleY(1.03)}}
+  .mark{transition:opacity 1.2s}
+  .mark.fade{opacity:0}
   @media (prefers-reduced-motion:reduce){*{animation-duration:0s!important}}
 </style>
 </head>
 <body>
 <header>
   <h1>罵<span>老闆</span> 🤬</h1>
-  <p class="sub">用麥克風大聲罵，或打字罵。罵得越狠，他崩潰得越快。</p>
+  <p class="sub">用麥克風大聲罵、打字罵，還能賞巴掌、射飛鏢、揍他、拿鐵鎚敲他的頭！</p>
 </header>
 
 <main>
@@ -303,6 +326,8 @@
                 <path d="M228,17 Q240,9 252,17 Q240,26 228,17 Z" fill="#e2716b"/></g>
               </g>
             </g>
+            <!-- weapon marks on the head (slap prints, bruises, darts, bumps) -->
+            <g id="marksHead"></g>
 
             <!-- sweat -->
             <g data-show="nervous sorry">
@@ -337,6 +362,7 @@
             <ellipse class="skin" cx="150" cy="200" rx="16" ry="20" stroke="#2a2420" stroke-width="4"/>
             <ellipse class="skin" cx="330" cy="200" rx="16" ry="20" stroke="#2a2420" stroke-width="4"/>
           </g>
+          <g id="marksBody"></g>
         </g>
 
         <!-- desk -->
@@ -362,12 +388,15 @@
     <div class="flash" id="flash"></div>
   </div>
 
+  <div class="weapons" id="weapons" role="group" aria-label="武器"></div>
+  <p class="wnote">選一個武器，再點老闆身上任何地方出手（直接按武器也會打）。</p>
+
   <div class="meter">
     <label for="bar">崩潰值</label>
     <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="fill" id="fill"></div></div>
     <span class="stagename" id="stageName">淡定 0%</span>
   </div>
-  <div class="stats"><span id="hitCount">已罵 0 句</span><span id="timer">0.0 秒</span></div>
+  <div class="stats"><span id="hitCount">已出手 0 次</span><span id="timer">0.0 秒</span></div>
 
   <div class="controls">
     <form id="form" autocomplete="off">
@@ -382,7 +411,7 @@
     </div>
     <div class="caption" id="caption"></div>
     <div class="chips" id="chips"></div>
-    <p class="hint">提示：用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
+    <p class="hint">提示：巴掌會留下紅手印、揍他會瘀青、飛鏢會插在身上、鐵鎚敲頭會腫包冒星星，鐵鎚傷害最高。用麥克風時「越大聲傷害越高」。罵到「加班、薪水、年終、休假」他會特別心虛。停太久不罵，老闆會慢慢恢復囂張。上傳老闆照片就會換成他的臉，表情跟著變（照片只在你的瀏覽器處理，不會上傳）。</p>
   </div>
 </main>
 
@@ -390,7 +419,7 @@
   <div class="card">
     <h2>K.O.！老闆崩潰了</h2>
     <p id="koStats"></p>
-    <p>最狠的一句：</p>
+    <p>最狠的一招：</p>
     <div class="quote" id="koQuote"></div>
     <button type="button" id="again">再罵一輪 🔁</button>
   </div>
@@ -577,16 +606,11 @@
     if (dmg > best.dmg) best = { text, dmg };
     rage = Math.min(100, rage + dmg);
 
-    bossAll.classList.remove('hit'); void bossAll.getBBox(); bossAll.classList.add('hit');
-    const f = $('#flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
-    const d = document.createElement('div');
-    d.className = 'dmg'; d.textContent = '-' + dmg;
-    d.style.left = (40 + Math.random() * 20) + '%'; d.style.top = (22 + Math.random() * 10) + '%';
-    stage.appendChild(d); setTimeout(() => d.remove(), 1000);
+    jolt('hit', dmg, 40 + Math.random() * 20, 22 + Math.random() * 10);
     sfx(dmg);
 
     render();
-    $('#hitCount').textContent = `已罵 ${hits} 句`;
+    $('#hitCount').textContent = `已出手 ${hits} 次`;
     const st = stageFor(rage);
     const line = rage >= 100 ? '我…我不行了……（當場崩潰）' : pickLine(text, st);
     lastLine = line;
@@ -594,10 +618,257 @@
     if (rage >= 100) knockOut();
   }
 
+  // shake the boss, flash the stage and pop a damage number at (left%, top%)
+  const JOLTS = ['hit', 'slapL', 'slapR', 'punch', 'smash'];
+  function jolt(cls, dmg, left, top) {
+    bossAll.classList.remove(...JOLTS); void bossAll.getBBox(); bossAll.classList.add(cls);
+    const f = $('#flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
+    const d = document.createElement('div');
+    d.className = 'dmg'; d.textContent = '-' + dmg;
+    d.style.left = left + '%'; d.style.top = top + '%';
+    stage.appendChild(d); setTimeout(() => d.remove(), 1000);
+  }
+
+  // ---------- weapons ----------
+  const WEAPONS = {
+    slap:   { icon: '🖐️', name: '賞巴掌', dmg: [7, 10],  ouch: ['啊！你、你敢打我？！', '好痛！我的臉！', '別打臉啦！我等一下還要見客戶！', '我爸都沒打過我！'] },
+    dart:   { icon: '🎯', name: '射飛鏢', dmg: [4, 7],   ouch: ['哎喲！是飛鏢！', '我不是靶子啦！', '好痛好痛！快幫我拔出來！', '你、你射得也太準了吧…'] },
+    punch:  { icon: '👊', name: '揍他',   dmg: [8, 12],  ouch: ['唔噗！', '好痛…別揍了別揍了！', '你、你練過喔？！', '我要叫警衛了喔！'] },
+    hammer: { icon: '🔨', name: '鐵鎚敲頭', dmg: [12, 16], ouch: ['我的頭！腫起來了啦！', '好多星星在轉…', '不要用鐵鎚啦！會出人命的！', '眼冒金星…這裡是哪裡…'] },
+  };
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => {
+    const e = document.createElementNS(SVGNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const isPhoto = () => boss.classList.contains('photo');
+  const onHead = (x, y) => ((x - 240) / 80) ** 2 + ((y - 150) / 92) ** 2 <= 1;
+  const DART_FROM = { x: 240, y: 470 };                           // darts are thrown from below the stage
+  const pct = p => ({ left: p.x / 480 * 100, top: p.y / 420 * 100 });
+  let weapon = 'slap', lastAtk = 0, bumpR = 0, bump = null;
+
+  // where a weapon lands for a tap at svg point (x, y)
+  function aim(kind, x, y) {
+    const ph = isPhoto();
+    if (kind === 'slap') { const side = x < 240 ? -1 : 1; return { x: 240 + side * (ph ? 30 : 44), y: ph ? 172 : 184, head: true, side }; }
+    if (kind === 'hammer') return { x: 240 + Math.max(-24, Math.min(24, x - 240)), y: ph ? 62 : 74, head: true };
+    x = Math.max(150, Math.min(330, x)); y = Math.max(70, Math.min(300, y));
+    return { x, y, head: onHead(x, y) };
+  }
+  // a random sensible target when the weapon button itself is pressed
+  function autoTarget(kind) {
+    if (kind === 'slap') return aim(kind, Math.random() < .5 ? 200 : 280, 180);
+    if (kind === 'hammer') return aim(kind, rnd(220, 260), 70);
+    if (kind === 'punch') return Math.random() < .6 ? aim(kind, rnd(205, 275), rnd(140, 200)) : aim(kind, rnd(200, 280), rnd(255, 295));
+    return Math.random() < .55 ? aim(kind, rnd(190, 290), rnd(100, 210)) : aim(kind, rnd(170, 310), rnd(250, 300));
+  }
+
+  function attack(kind, t) {
+    if (ko) return;
+    const now = performance.now();
+    if (now - lastAtk < 150) return;
+    lastAtk = now;
+    if (!startTime) startTime = now;
+    weaponSfx(kind, 'swing');
+    flyIn(kind, t, () => impact(kind, t));
+  }
+
+  const DART_SVG = '<svg viewBox="0 0 64 20"><path d="M2,2 L16,10 L2,18 L8,10 Z" fill="#e2483d" stroke="#2a2420" stroke-width="1.5"/>' +
+    '<rect x="12" y="7" width="30" height="6" rx="2" fill="#f5d13b" stroke="#2a2420" stroke-width="1.5"/>' +
+    '<path d="M42,8.5 L63,10 L42,11.5 Z" fill="#c9d1d6" stroke="#2a2420" stroke-width="1"/></svg>';
+
+  // the weapon flying in, as an html overlay on the stage
+  function flyIn(kind, t, done) {
+    const el = document.createElement('div'), p = pct(t), w = stage.clientWidth, sc = w / 480;
+    el.className = 'fx'; el.style.left = p.left + '%'; el.style.top = p.top + '%';
+    let frames, dur;
+    if (kind === 'dart') {
+      const a = Math.atan2(t.y - DART_FROM.y, t.x - DART_FROM.x) * 180 / Math.PI;
+      const dx = (DART_FROM.x - t.x) * sc, dy = (DART_FROM.y - t.y) * sc;
+      el.innerHTML = DART_SVG; el.style.transformOrigin = '0 0';
+      frames = [{ transform: `translate(${dx}px,${dy}px) rotate(${a}deg) scale(1.6)` }, { transform: `translate(0,0) rotate(${a}deg) scale(1)` }];
+      dur = 260;
+    } else {
+      el.innerHTML = '<span>' + WEAPONS[kind].icon + '</span>';
+      if (kind === 'slap') {
+        const s = t.side, flip = s < 0 ? 1 : -1;
+        frames = [{ transform: `translateX(${s * 150}px) rotate(${s * 35}deg) scaleX(${flip})`, opacity: 0 },
+                  { transform: `translateX(${s * 90}px) rotate(${s * 25}deg) scaleX(${flip})`, opacity: 1, offset: .4 },
+                  { transform: `translateX(0) rotate(0) scaleX(${flip})`, opacity: 1 }];
+        dur = 170;
+      } else if (kind === 'punch') {
+        const dx = (240 - t.x) * sc, dy = (440 - t.y) * sc;
+        frames = [{ transform: `translate(${dx}px,${dy}px) scale(.5)`, opacity: .6 }, { transform: 'translate(0,0) scale(1.35)', opacity: 1 }];
+        dur = 200;
+      } else {
+        el.style.transformOrigin = '0 0';
+        frames = [{ transform: 'translate(30px,-50px) rotate(70deg)' }, { transform: 'translate(36px,-56px) rotate(85deg)', offset: .35 },
+                  { transform: 'translate(0,-8px) rotate(-20deg)' }];
+        dur = 300;
+      }
+    }
+    stage.appendChild(el);
+    const anim = el.animate(frames, { duration: dur, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' });
+    anim.onfinish = () => { done(); setTimeout(() => el.remove(), kind === 'dart' ? 0 : 140); };
+  }
+
+  function burst(emoji, t) {
+    const el = document.createElement('div'), p = pct(t);
+    el.className = 'fx burst'; el.style.left = p.left + '%'; el.style.top = p.top + '%';
+    el.innerHTML = '<span>' + emoji + '</span>';
+    stage.appendChild(el);
+    el.animate([{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.3)', opacity: 1, offset: .4 }, { transform: 'scale(1.5)', opacity: 0 }],
+      { duration: 450, easing: 'ease-out' }).onfinish = () => el.remove();
+  }
+
+  function fadeMark(g, ms) { setTimeout(() => { g.classList.add('fade'); setTimeout(() => g.remove(), 1300); }, ms); }
+
+  // what the weapon leaves behind, drawn in svg so it moves with the head
+  function addMark(kind, t) {
+    const layer = $(t.head ? '#marksHead' : '#marksBody');
+    if (kind === 'slap') {
+      const g = mk('g', { class: 'mark', fill: '#d8322a', opacity: .62 }, layer), s = t.side;
+      mk('ellipse', { cx: t.x, cy: t.y + 5, rx: 11, ry: 12 }, g);
+      [-7.5, -2.5, 2.5, 7.5].forEach((dx, i) => mk('ellipse', { cx: t.x + dx, cy: t.y - 10 + Math.abs(i - 1.5) * 2, rx: 2.4, ry: 8 }, g));
+      mk('ellipse', { cx: t.x + s * 12, cy: t.y + 5, rx: 2.6, ry: 7, transform: `rotate(${s * 40} ${t.x + s * 12} ${t.y + 5})` }, g);
+      fadeMark(g, 7000);
+    } else if (kind === 'punch') {
+      const g = mk('g', { class: 'mark' }, layer);
+      mk('ellipse', { cx: t.x, cy: t.y, rx: 14, ry: 11, fill: '#7b4f9e', opacity: .45 }, g);
+      mk('ellipse', { cx: t.x, cy: t.y, rx: 7, ry: 5, fill: '#4a2a63', opacity: .4 }, g);
+      fadeMark(g, 10000);
+    } else if (kind === 'dart') {
+      // tip at the target, body pointing back towards the thrower
+      const a = Math.atan2(t.y - DART_FROM.y, t.x - DART_FROM.x), ux = -Math.cos(a), uy = -Math.sin(a), nx = -uy, ny = ux;
+      const P = (d, n) => `${(t.x + ux * d + nx * n).toFixed(1)},${(t.y + uy * d + ny * n).toFixed(1)}`;
+      const g = mk('g', { class: 'mark' }, layer);
+      mk('circle', { cx: t.x, cy: t.y, r: 2.5, fill: '#c0392b' }, g);
+      mk('polygon', { points: [P(0, 0), P(9, 1.4), P(9, -1.4)].join(' '), fill: '#c9d1d6', stroke: '#2a2420', 'stroke-width': 1 }, g);
+      mk('polygon', { points: [P(9, 2.6), P(25, 2.6), P(25, -2.6), P(9, -2.6)].join(' '), fill: '#f5d13b', stroke: '#2a2420', 'stroke-width': 1.5 }, g);
+      mk('polygon', { points: [P(22, 0), P(35, 7), P(31, 0), P(35, -7)].join(' '), fill: '#e2483d', stroke: '#2a2420', 'stroke-width': 1.5 }, g);
+      const darts = $('#marksHead').querySelectorAll('.dart').length + $('#marksBody').querySelectorAll('.dart').length;
+      g.classList.add('dart');
+      if (darts >= 14) { const old = document.querySelector('#boss .dart'); if (old) old.remove(); }
+    } else if (kind === 'hammer') {
+      // one bump that swells with every hit, plus circling stars
+      bumpR = bumpR ? Math.min(22, bumpR + 4) : 10;
+      if (!bump || !bump.isConnected) {
+        bump = mk('g', { class: 'mark' }, $('#marksHead'));
+        mk('ellipse', { fill: '#f08f7a', stroke: '#2a2420', 'stroke-width': 3 }, bump);
+        mk('ellipse', { fill: '#fff', opacity: .55 }, bump);
+      }
+      const [b, hl] = bump.children;
+      for (const [k, v] of Object.entries({ cx: t.x, cy: t.y, rx: bumpR * 1.1, ry: bumpR })) b.setAttribute(k, v);
+      for (const [k, v] of Object.entries({ cx: t.x - bumpR * .35, cy: t.y - bumpR * .4, rx: bumpR * .3, ry: bumpR * .18 })) hl.setAttribute(k, v);
+      const stars = mk('g', { class: 'spiral' }, $('#marksHead'));
+      for (let i = 0; i < 4; i++) {
+        const ang = i * Math.PI / 2;
+        const s = mk('text', { x: t.x + Math.cos(ang) * 44, y: t.y - 12 + Math.sin(ang) * 16, 'font-size': 20, 'text-anchor': 'middle', fill: '#ffdf3b', stroke: '#2a2420', 'stroke-width': 1.2 }, stars);
+        s.textContent = '★';
+      }
+      setTimeout(() => stars.remove(), 1800);
+    }
+  }
+
+  function impact(kind, t) {
+    if (ko) return;
+    const W = WEAPONS[kind];
+    const dmg = Math.round(rnd(W.dmg[0], W.dmg[1]));
+    hits++; lastHit = performance.now();
+    if (dmg > best.dmg) best = { text: W.icon + ' ' + W.name, dmg };
+    rage = Math.min(100, rage + dmg);
+    const p = pct(t);
+    jolt(kind === 'slap' ? (t.side < 0 ? 'slapL' : 'slapR') : kind === 'dart' ? 'hit' : kind === 'punch' ? 'punch' : 'smash', dmg, p.left, Math.max(6, p.top - 8));
+    burst(kind === 'slap' ? '💢' : kind === 'dart' ? '✨' : '💥', t);
+    addMark(kind, t);
+    weaponSfx(kind, 'hit');
+    render();
+    $('#hitCount').textContent = `已出手 ${hits} 次`;
+    const st = stageFor(rage);
+    let line;
+    if (rage >= 100) line = '我…我不行了……（當場崩潰）';
+    else if (st.key !== 'breakdown' && Math.random() < .7) {
+      let tries = 0;
+      do { line = W.ouch[Math.floor(Math.random() * W.ouch.length)]; } while (line === lastLine && tries++ < 5);
+    } else line = pickLine('', st);
+    lastLine = line;
+    say(line); speak(line, st);
+    if (rage >= 100) knockOut();
+  }
+
+  // ---------- weapon sounds (synthesised, no files) ----------
+  function audio() {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function noise(a, t, dur, type, freq, vol, freqTo) {
+    const n = Math.ceil(a.sampleRate * dur), buf = a.createBuffer(1, n, a.sampleRate), ch = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) ch[i] = Math.random() * 2 - 1;
+    const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = buf; f.type = type; f.frequency.setValueAtTime(freq, t);
+    if (freqTo) f.frequency.exponentialRampToValueAtTime(freqTo, t + dur);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    s.connect(f).connect(g).connect(a.destination); s.start(t); s.stop(t + dur);
+  }
+  function tone(a, t, type, f0, f1, dur, vol) {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .02);
+  }
+  function weaponSfx(kind, phase) {
+    if (!soundOn) return;
+    try {
+      const a = audio(), t = a.currentTime;
+      if (phase === 'swing') {
+        if (kind === 'dart') noise(a, t, .22, 'bandpass', 700, .25, 3200);
+        else if (kind === 'hammer') noise(a, t, .28, 'bandpass', 300, .3, 900);
+        else noise(a, t, .14, 'bandpass', 500, .18, 1500);
+        return;
+      }
+      if (kind === 'slap') { noise(a, t, .1, 'highpass', 1800, .9); noise(a, t, .06, 'bandpass', 900, .6); tone(a, t, 'sine', 260, 120, .06, .3); }
+      else if (kind === 'dart') { tone(a, t, 'triangle', 320, 110, .09, .5); noise(a, t, .04, 'bandpass', 2400, .4); }
+      else if (kind === 'punch') { tone(a, t, 'sine', 150, 40, .22, .9); noise(a, t, .12, 'lowpass', 600, .7); }
+      else {
+        tone(a, t, 'sine', 110, 40, .3, .9); noise(a, t, .08, 'lowpass', 1200, .6);
+        [523, 1187, 1840, 2650].forEach((f, i) => tone(a, t, 'triangle', f, f * .98, .6 - i * .1, .12));
+      }
+    } catch (e) {}
+  }
+
+  // ---------- weapon picker ----------
+  const wbox = $('#weapons');
+  function cursorFor(kind) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><text x="20" y="31" font-size="30" text-anchor="middle">${WEAPONS[kind].icon}</text></svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 20 20, crosshair`;
+  }
+  function pickWeapon(kind) {
+    weapon = kind;
+    wbox.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.w === kind));
+    stage.style.cursor = cursorFor(kind);
+  }
+  for (const [k, W] of Object.entries(WEAPONS)) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.dataset.w = k; b.innerHTML = `<b aria-hidden="true">${W.icon}</b>${W.name}`;
+    b.onclick = () => { pickWeapon(k); attack(k, autoTarget(k)); };
+    wbox.appendChild(b);
+  }
+  pickWeapon('slap');
+  stage.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    const r = stage.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * 480, y = (e.clientY - r.top) / r.height * 420;
+    attack(weapon, aim(weapon, x, y));
+  });
+
   function knockOut() {
     ko = true;
     const secs = ((performance.now() - startTime) / 1000).toFixed(1);
-    $('#koStats').textContent = `你用了 ${secs} 秒、罵了 ${hits} 句，成功讓老闆崩潰！`;
+    $('#koStats').textContent = `你用了 ${secs} 秒、出手 ${hits} 次，成功讓老闆崩潰！`;
     $('#koQuote').textContent = `「${best.text}」（傷害 ${best.dmg}）`;
     setTimeout(() => $('#ko').classList.add('show'), 1600);
   }
@@ -605,7 +876,8 @@
   function reset() {
     rage = 0; hits = 0; startTime = 0; ko = false; best = { text: '', dmg: 0 };
     $('#ko').classList.remove('show');
-    $('#hitCount').textContent = '已罵 0 句';
+    $('#hitCount').textContent = '已出手 0 次';
+    $('#marksHead').replaceChildren(); $('#marksBody').replaceChildren(); bumpR = 0;
     render(); speakLine('哼…剛剛是我一時失態。好了，回去工作吧！');
   }
   $('#again').onclick = reset;

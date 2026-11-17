@@ -21,6 +21,7 @@ PROSODY = {
     'cry':       ('+5%',  '+6Hz'),
     'breakdown': ('+18%', '+10Hz'),
     'special':   ('+10%', '+2Hz'),
+    'ouch':      ('+10%', '+5Hz'),
     'other':     ('+0%',  '-4Hz'),
 }
 
@@ -46,6 +47,9 @@ def collect():
     for m in re.finditer(r"lines: \[(.*?)\]", sp):
         for s in re.findall(r"'([^']+)'", m.group(1)):
             items.setdefault(clean(s), 'special')
+    for m in re.finditer(r"ouch: \[(.*?)\]", src):  # weapon hit reactions
+        for s in re.findall(r"'([^']+)'", m.group(1)):
+            items.setdefault(clean(s), 'ouch')
     for s in re.findall(r"(?:say|speakLine)\('([^']+)'", src) + re.findall(r"rage >= 100 \? '([^']+)'", src):
         items.setdefault(clean(s), 'breakdown' if '崩潰' in s else 'other')
     return items
